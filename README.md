@@ -19,7 +19,7 @@ limitations under the License.
 
 ## What is this repository for
 
-- One Piece Trip is the service trip storage.
+- One Piece Trip is the service for trip storage.
 
 ### Contribution guidelines
 
