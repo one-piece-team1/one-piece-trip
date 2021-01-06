@@ -81,7 +81,7 @@ const configs = {
       password: process.env.DBPASSWORD || '123',
       database: process.env.DBDATABASE || 'onepiece',
       schema: process.env.DBSCHEMA || 'public',
-      userTable: process.env.DBRATETABLE || 'trip',
+      tripTable: process.env.DBRATETABLE || 'trip',
     },
 
     REDIS_URL: process.env.REDIS_URL || "redis://127.0.0.1:6381",
