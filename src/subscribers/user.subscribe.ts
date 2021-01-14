@@ -15,7 +15,9 @@ interface IReceiveEvent {
 @Injectable()
 export class EventSubscribers {
   private readonly logger: Logger = new Logger('EventSubscribers');
-  private readonly onepieceUserExchange: string = 'onepiece-user';
+  // one server only listen to one exchange
+  // seperate different event by type for different services
+  private readonly onepieceUserExchange: string = 'onepiece-trip';
 
   constructor(private readonly userRepository: UserRepository) {
     this.listen();
@@ -26,7 +28,7 @@ export class EventSubscribers {
    */
   listen() {
     AMQPHandlerFactory.createSub(
-      'onepiece_user_queue',
+      'onepiece_trip_queue',
       this.onepieceUserExchange,
     )
       .then(event => this.execute(event))

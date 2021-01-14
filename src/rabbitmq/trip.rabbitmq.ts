@@ -3,7 +3,8 @@ import { Logger } from '@nestjs/common';
 import { config } from '../../config';
 
 export class AMQPHandler {
-  private defaultExchangeName = 'onepiece-user';
+  // one server only listen to one exchange
+  private defaultExchangeName = 'onepiece-trip';
   private logger = new Logger('AMQPHandler');
 
   /**
