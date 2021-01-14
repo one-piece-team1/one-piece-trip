@@ -9,6 +9,9 @@ interface IReceiveEvent {
   data: UserCreditDto;
 }
 
+/**
+ * @classdesc RMQ user event subscribe
+ */
 @Injectable()
 export class EventSubscribers {
   private readonly logger: Logger = new Logger('EventSubscribers');
@@ -18,6 +21,9 @@ export class EventSubscribers {
     this.listen();
   }
 
+  /**
+   * @description listen to RMQ sub event
+   */
   listen() {
     AMQPHandlerFactory.createSub(
       'onepiece_user_queue',
@@ -27,6 +33,10 @@ export class EventSubscribers {
       .catch(err => this.logger.log(err.message));
   }
 
+  /**
+   * @description Excute sub event and assign to responsable repository handler
+   * @param {string} event
+   */
   execute(event) {
     const jsonEvent: IReceiveEvent = JSON.parse(event);
     switch (jsonEvent.type) {
