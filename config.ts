@@ -59,6 +59,11 @@ const configs = {
     HOST: process.env.APPHOST || 'localhost',
     PORT: process.env.APPPORT || 7072,
 
+    JWT: {
+      KEY: process.env.JWTKEY || 'lib',
+      SECRET: process.env.JWTSECRET || 'lib',
+    },
+
     EVENT_STORE_SETTINGS: {
       protocol: process.env.EVENTSTOREPROTOCOL || 'amqp',
       hostname: process.env.EVENTSTOREHOSTNAME || 'localhost',
