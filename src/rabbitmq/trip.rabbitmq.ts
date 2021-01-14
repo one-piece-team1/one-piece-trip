@@ -61,17 +61,14 @@ export class AMQPHandler {
                 },
                 (assertErr: Error, q: amqp.Replies.AssertQueue) => {
                   if (assertErr) return reject(assertErr.message);
-
-                  this.logger.log(
-                    q.queue,
-                    '[*] Waiting for messages in %s. To exit press CTRL+C',
-                  );
                   channel.bindQueue(q.queue, this.defaultExchangeName, '');
-
                   channel.consume(
                     q.queue,
                     (msg: amqp.Message) => {
-                      this.logger.log(msg, 'AMQPHandler-SubscribeData');
+                      this.logger.log(
+                        msg.content.toString(),
+                        'AMQPHandler-SubscribeData',
+                      );
                       if (msg.content) resolve(msg.content.toString());
                     },
                     { noAck: true },

@@ -97,6 +97,16 @@ export class User extends BaseEntity {
   desc?: string;
 
   /**
+   * @description Relation Area
+   */
+  @OneToMany(
+    () => Trip,
+    trip => trip.user,
+  )
+  @JoinColumn()
+  trips: Trip[];
+
+  /**
    * @description Time area
    */
   @CreateDateColumn({ type: 'timestamp', nullable: false })
@@ -104,13 +114,6 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn({ type: 'timestamp', nullable: false })
   updatedAt: Date;
-
-  @OneToMany(
-    () => Trip,
-    trip => trip.user,
-  )
-  @JoinColumn()
-  trips: Trip[];
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);

@@ -54,6 +54,7 @@ export class UserRepository extends Repository<User> {
     user.password = await this.hashPassword(password, user.salt);
     user.expiredDate = utils.addMonths(new Date(Date.now()), 1);
     try {
+      this.logger.log(user);
       await user.save();
     } catch (error) {
       if (error.code === '23505') {

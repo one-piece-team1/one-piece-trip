@@ -9,6 +9,7 @@ import { JwtStrategy } from './strategy';
 import { TripController } from './trip.controller';
 import { TripRepository } from './trip.repository';
 import { TripService } from './trip.service';
+import { EventSubscribers } from '../subscribers';
 import { config } from '../../config';
 
 @Module({
@@ -36,6 +37,6 @@ import { config } from '../../config';
     ]),
   ],
   controllers: [TripController],
-  providers: [TripService, AMQPHandler, JwtStrategy],
+  providers: [TripService, JwtStrategy, EventSubscribers],
 })
 export class TripModule {}
