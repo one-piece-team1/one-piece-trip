@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Logger,
-  SetMetadata,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Logger, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from './get-user.decorator';
 import { TripService } from './trip.service';

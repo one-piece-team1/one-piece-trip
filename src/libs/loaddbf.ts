@@ -17,10 +17,7 @@ interface ICountry {
 
 class DBFHandler {
   private readonly logger: Logger = new Logger('dbfHandler');
-  private readonly portFilePath: string = join(
-    process.cwd(),
-    'datasets/ports/WPI.dbf',
-  );
+  private readonly portFilePath: string = join(process.cwd(), 'datasets/ports/WPI.dbf');
 
   /**
    * @description Get or create Country
@@ -30,7 +27,7 @@ class DBFHandler {
    */
   private async getCountry(code: string): Promise<Country> {
     const countriesData = CountriesData['default'] as ICountry[];
-    const countryData = countriesData.filter(country => country.code === code);
+    const countryData = countriesData.filter((country) => country.code === code);
     if (countryData.length > 0) {
       const country = await getManager().findOne(Country, { where: { code } });
       if (!country) {
@@ -75,9 +72,7 @@ class DBFHandler {
       location
         .save()
         .then(() => this.logger.log('Create Seed Port Data Success'))
-        .catch(err =>
-          this.logger.log(err.message, 'Create Seed Port Data Fail'),
-        );
+        .catch((err) => this.logger.log(err.message, 'Create Seed Port Data Fail'));
     }
   }
 
@@ -95,7 +90,7 @@ class DBFHandler {
       database: config.DB_SETTINGS.database,
       entities: [Location, Country, Trip, User],
       synchronize: true,
-    }).catch(err => this.logger.log(err.message, 'Init'));
+    }).catch((err) => this.logger.log(err.message, 'Init'));
     this.generatePointsData();
   }
 }

@@ -30,11 +30,7 @@ import { config } from '../../config';
         algorithms: ['HS256'],
       },
     }),
-    TypeOrmModule.forFeature([
-      TripRepository,
-      LocationRepository,
-      UserRepository,
-    ]),
+    TypeOrmModule.forFeature([TripRepository, LocationRepository, UserRepository]),
   ],
   controllers: [TripController],
   providers: [TripService, JwtStrategy, EventSubscribers],

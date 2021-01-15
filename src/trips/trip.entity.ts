@@ -1,17 +1,4 @@
-import {
-  BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import * as ETrip from '../enums';
@@ -49,12 +36,15 @@ export class Trip extends BaseEntity {
    */
   @ManyToOne(
     () => User,
-    user => user.trips,
+    (user) => user.trips,
   )
   @JoinColumn()
   user: User;
 
-  @ManyToMany(type => User, user => user.views)
+  @ManyToMany(
+    (type) => User,
+    (user) => user.views,
+  )
   @JoinColumn()
   viewers: User[];
 
@@ -63,14 +53,14 @@ export class Trip extends BaseEntity {
    */
   @ManyToOne(
     () => Location,
-    location => location.startTrips,
+    (location) => location.startTrips,
   )
   @JoinColumn()
   startPoint: Location;
 
   @ManyToOne(
     () => Location,
-    location => location.endTrips,
+    (location) => location.endTrips,
   )
   @JoinColumn()
   endPoint: Location;

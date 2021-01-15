@@ -27,12 +27,9 @@ export class EventSubscribers {
    * @description listen to RMQ sub event
    */
   listen() {
-    AMQPHandlerFactory.createSub(
-      'onepiece_trip_queue',
-      this.onepieceUserExchange,
-    )
-      .then(event => this.execute(event))
-      .catch(err => this.logger.log(err.message));
+    AMQPHandlerFactory.createSub('onepiece_trip_queue', this.onepieceUserExchange)
+      .then((event) => this.execute(event))
+      .catch((err) => this.logger.log(err.message));
   }
 
   /**
