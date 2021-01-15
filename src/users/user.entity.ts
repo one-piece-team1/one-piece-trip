@@ -11,6 +11,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   JoinColumn,
+  ManyToMany,
+  AfterLoad,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as EUser from '../enums';
@@ -76,15 +78,6 @@ export class User extends BaseEntity {
   status: boolean;
 
   /**
-   * @description Following Area
-   */
-  @Column({ type: 'int', nullable: false, default: 0 })
-  followerCount: number;
-
-  @Column({ type: 'int', nullable: false, default: 0 })
-  followingCount: number;
-
-  /**
    * @description User Info area
    */
   @Column({ type: 'enum', enum: EUser.EUserGender, nullable: true })
@@ -96,6 +89,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   desc?: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  profileImage?: string;
+
   /**
    * @description Relation Area
    */
@@ -105,6 +101,41 @@ export class User extends BaseEntity {
   )
   @JoinColumn()
   trips: Trip[];
+
+  @ManyToMany(type => Trip, trip => trip.viewers)
+  @JoinColumn()
+  views: Trip[];
+
+  /**
+   * @description Following Area
+   */
+  @ManyToMany(type => User, user => user.following)
+  @JoinColumn()
+  followers: User[];
+
+  @ManyToMany(type => User, user => user.followers)
+  @JoinColumn()
+  following: User[];
+
+  @OneToMany(type => User, user => user.blockLists)
+  @JoinColumn()
+  blockLists: User[];
+
+  @Column({ type: 'int', nullable: false, default: 0 })
+  followerCount: number;
+
+  @Column({ type: 'int', nullable: false, default: 0 })
+  followingCount: number;
+
+  @AfterLoad()
+  async countFollowers() {
+    this.followerCount = this.followers.length;
+  }
+
+  @AfterLoad()
+  async countFollowings() {
+    this.followingCount = this.following.length;
+  }
 
   /**
    * @description Time area

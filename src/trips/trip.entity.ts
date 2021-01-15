@@ -6,23 +6,37 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
+import * as ETrip from '../enums';
 
 @Entity()
 export class Trip extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  /**
+   * @description Basic Area
+   */
   @Column({ type: 'timestamp', nullable: false })
   startDate: Date;
 
   @Column({ type: 'timestamp', nullable: false })
   endDate: Date;
+
+  @Column({
+    type: 'enum',
+    enum: ETrip.ETripView,
+    default: ETrip.ETripView.PUBLIC,
+    nullable: false,
+  })
+  publicStatus: string;
 
   @Column({ type: 'varchar', nullable: true })
   companyName?: string;
@@ -30,6 +44,9 @@ export class Trip extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   shipNumber?: string;
 
+  /**
+   * @description Relation Area with User
+   */
   @ManyToOne(
     () => User,
     user => user.trips,
@@ -37,6 +54,13 @@ export class Trip extends BaseEntity {
   @JoinColumn()
   user: User;
 
+  @ManyToMany(type => User, user => user.views)
+  @JoinColumn()
+  viewers: User[];
+
+  /**
+   * @description Relation Area with location
+   */
   @ManyToOne(
     () => Location,
     location => location.startTrips,
