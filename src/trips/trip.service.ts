@@ -20,7 +20,7 @@ export class TripService {
   }
 
   public async createTrip(user: IUser.UserInfo | IUser.JwtPayload, createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
-    const { startDate, endDate, publisherId, startPointId, endPointId, publicStatus, companyName, shipNumber } = createTripDto;
+    const { startDate, endDate, publisherId, startPointName, endPointName, publicStatus, companyName, shipNumber } = createTripDto;
 
     // check user information if it's pass user is valid
     if (user.id !== publisherId)
@@ -44,7 +44,7 @@ export class TripService {
     // fi
 
     // validation relation data of Location is validate or not
-    const promises = [this.locationRepository.findLocationById(startPointId), this.locationRepository.findLocationById(endPointId)];
+    const promises = [this.locationRepository.findLocationByLocationName(startPointName), this.locationRepository.findLocationByLocationName(endPointName)];
 
     const locations = await Promise.all(promises);
     if (!(locations instanceof Array))

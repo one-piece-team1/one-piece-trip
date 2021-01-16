@@ -1,4 +1,4 @@
-import { IsDateString, IsIn, IsOptional, IsUUID } from 'class-validator';
+import { IsDateString, IsIn, IsOptional, IsString, IsUUID } from 'class-validator';
 import * as ETrip from '../../enums';
 
 export class CreateTripDto {
@@ -11,11 +11,11 @@ export class CreateTripDto {
   @IsUUID()
   publisherId: string;
 
-  @IsUUID()
-  startPointId: string;
+  @IsString()
+  startPointName: string;
 
-  @IsUUID()
-  endPointId: string;
+  @IsString()
+  endPointName: string;
 
   @IsIn([ETrip.ETripView.SELF, ETrip.ETripView.PUBLIC, ETrip.ETripView.FRIEND])
   publicStatus: ETrip.ETripView;

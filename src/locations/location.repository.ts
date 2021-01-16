@@ -7,9 +7,9 @@ export class LocationRepository extends Repository<Location> {
   private readonly repoManager: EntityManager = getManager();
   private readonly logger: Logger = new Logger('LocationRepository');
 
-  public async findLocationById(id: string): Promise<Location> {
+  public async findLocationByLocationName(locationName: string): Promise<Location> {
     try {
-      const location = await this.findOne(id);
+      const location = await this.findOne({ where: { locationName } });
       if (!location) throw new NotFoundException();
       return location;
     } catch (error) {
