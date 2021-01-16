@@ -4,7 +4,7 @@ import { config } from '../../config';
 
 @Injectable()
 export class TripEventPublishers {
-  private logger = new Logger('AMQPHandler');
+  private logger = new Logger('TripEventPublishers');
 
   /**
    * @description Pub Data
@@ -24,7 +24,7 @@ export class TripEventPublishers {
           });
           channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)));
           resolve(true);
-          this.logger.log(message, 'AMQPHandler-PublishData');
+          this.logger.log(JSON.stringify(message), 'TripEventPublishers-PublishData');
         });
       });
     });
