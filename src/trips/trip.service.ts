@@ -6,6 +6,7 @@ import { LocationRepository } from 'locations/location.repository';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import { UserRepository } from 'users/user.repository';
+import { TripHandlerFactory } from '../handlers';
 import * as ETrip from '../enums';
 import * as ITrip from '../interfaces';
 
@@ -77,7 +78,10 @@ export class TripService {
     };
 
     try {
+      // repo layer handle
       const trip = await this.tripRepository.createTrip(tripData);
+      // microserivce createTrip async Event
+      TripHandlerFactory.createTrip(trip);
       return {
         statusCode: HttpStatus.CREATED,
         status: 'success',

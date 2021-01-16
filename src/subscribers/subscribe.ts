@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { UserCreditDto } from 'users/dto';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { UserRepository } from 'users/user.repository';
-import { AMQPHandlerFactory } from 'rabbitmq';
+import { AMQPHandlerFactory } from '../rabbitmq';
 import * as Event from '../events';
 import { User } from '../users/user.entity';
 
@@ -14,11 +13,11 @@ interface IReceiveEvent {
  * @classdesc RMQ user event subscribe
  */
 @Injectable()
-export class EventSubscribers {
-  private readonly logger: Logger = new Logger('EventSubscribers');
+export class TripEventSubscribers {
+  private readonly logger: Logger = new Logger('TripEventSubscribers');
   // one server only listen to one exchange
   // seperate different event by type for different services
-  private readonly onepieceUserExchange: string = 'onepiece-trip';
+  private readonly onepieceTripExchange: string = 'onepiece-trip';
 
   constructor(private readonly userRepository: UserRepository) {
     this.listen();
@@ -28,8 +27,11 @@ export class EventSubscribers {
    * @description listen to RMQ sub event
    */
   listen() {
-    AMQPHandlerFactory.createSub('onepiece_trip_queue', this.onepieceUserExchange)
-      .then((event) => this.execute(event))
+    AMQPHandlerFactory.createSub('onepiece_trip_queue', this.onepieceTripExchange)
+      .then((event) => {
+        console.log("check_evt: ", event)
+        this.execute(event)
+      })
       .catch((err) => this.logger.log(err.message));
   }
 
