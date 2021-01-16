@@ -73,7 +73,7 @@ export class TripEventSubscribers {
    */
   execute(event) {
     const jsonEvent: IReceiveEvent = JSON.parse(event);
-    console.log('jsonEvent', jsonEvent);
+    this.logger.log(event, 'TripEventSubscribers');
     switch (jsonEvent.type) {
       case Event.UserEvent.CREATEUSER:
         return this.userRepository.createUser(jsonEvent.data);
