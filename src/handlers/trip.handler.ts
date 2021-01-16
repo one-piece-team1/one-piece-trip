@@ -19,7 +19,7 @@ class TripHandler {
     pubExchanges.forEach((exchange: string) => {
       TripEventPublishersFactory.createPub(
         {
-          type: Event.UserEvent.CREATEUSER,
+          type: Event.TripEvent.CREATETRIP,
           data: trip,
         },
         exchange,
