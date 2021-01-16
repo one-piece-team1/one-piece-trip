@@ -1,6 +1,7 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import * as amqp from 'amqplib/callback_api';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from 'users/user.repository';
-import { AMQPHandlerFactory } from '../rabbitmq';
+import { config } from '../../config';
 import * as Event from '../events';
 import { User } from '../users/user.entity';
 
@@ -17,22 +18,53 @@ export class TripEventSubscribers {
   private readonly logger: Logger = new Logger('TripEventSubscribers');
   // one server only listen to one exchange
   // seperate different event by type for different services
-  private readonly onepieceTripExchange: string = 'onepiece-trip';
+  private readonly defaultExchangeName: string = 'onepiece-trip';
 
   constructor(private readonly userRepository: UserRepository) {
-    this.listen();
+    this.subscribeData('onepiece_trip_queue');
   }
 
   /**
-   * @description listen to RMQ sub event
+   * @description Sub Data
+   * @public
+   * @param {string} queueName
+   * @returns {Promise<unknown>}
    */
-  listen() {
-    AMQPHandlerFactory.createSub('onepiece_trip_queue', this.onepieceTripExchange)
-      .then((event) => {
-        console.log("check_evt: ", event)
-        this.execute(event)
-      })
-      .catch((err) => this.logger.log(err.message));
+  subscribeData(queueName: string): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      amqp.connect(`${config.EVENT_STORE_SETTINGS.protocol}://${config.EVENT_STORE_SETTINGS.hostname}:${config.EVENT_STORE_SETTINGS.tcpPort}/?heartbeat=60`, (connectErr: Error, connection: amqp.Connection) => {
+        if (connectErr) return reject(connectErr.message);
+
+        connection.createChannel((createChErr: Error, channel: amqp.Channel) => {
+          if (createChErr) return reject(createChErr.message);
+          channel.assertExchange(this.defaultExchangeName, 'fanout', {
+            durable: false,
+          });
+
+          channel.assertQueue(
+            queueName,
+            {
+              exclusive: true,
+            },
+            (assertErr: Error, q: amqp.Replies.AssertQueue) => {
+              if (assertErr) return reject(assertErr.message);
+              channel.bindQueue(q.queue, this.defaultExchangeName, '');
+              channel.consume(
+                q.queue,
+                (msg: amqp.Message) => {
+                  this.logger.log(msg.content.toString(), 'AMQPHandler-SubscribeData');
+                  if (msg.content) {
+                    this.execute(msg.content.toString());
+                    resolve(true);
+                  }
+                },
+                { noAck: true },
+              );
+            },
+          );
+        });
+      });
+    });
   }
 
   /**
@@ -41,6 +73,7 @@ export class TripEventSubscribers {
    */
   execute(event) {
     const jsonEvent: IReceiveEvent = JSON.parse(event);
+    console.log('jsonEvent', jsonEvent);
     switch (jsonEvent.type) {
       case Event.UserEvent.CREATEUSER:
         return this.userRepository.createUser(jsonEvent.data);

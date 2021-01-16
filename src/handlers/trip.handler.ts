@@ -1,4 +1,4 @@
-import { AMQPHandlerFactory } from '../rabbitmq';
+import { TripEventPublishersFactory } from '../publishers';
 import { Trip } from '../trips/trip.entity';
 import * as Event from '../events';
 
@@ -17,7 +17,7 @@ class TripHandler {
   createTrip(trip: Trip) {
     const pubExchanges: string[] = [this.onepieceUserExchange];
     pubExchanges.forEach((exchange: string) => {
-      AMQPHandlerFactory.createPub(
+      TripEventPublishersFactory.createPub(
         {
           type: Event.UserEvent.CREATEUSER,
           data: trip,
