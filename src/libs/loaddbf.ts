@@ -68,7 +68,6 @@ class DBFHandler {
         type: 'Point',
         coordinates: [location.lon, location.lat],
       };
-      this.logger.log(location, 'Debug');
       location
         .save()
         .then(() => this.logger.log('Create Seed Port Data Success'))

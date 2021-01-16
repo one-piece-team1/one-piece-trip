@@ -2,7 +2,6 @@ import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, Unique, Index, Befo
 import * as bcrypt from 'bcrypt';
 import * as EUser from '../enums';
 import { Trip } from 'trips/trip.entity';
-import { type } from 'os';
 
 @Entity()
 @Unique(['username', 'email'])
@@ -82,7 +81,7 @@ export class User extends BaseEntity {
    */
   @OneToMany(
     () => Trip,
-    (trip) => trip.user,
+    (trip) => trip.publisher,
   )
   @JoinColumn()
   trips: Trip[];
