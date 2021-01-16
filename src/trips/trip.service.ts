@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { TripRepository } from './trip.repository';
 import * as IUser from '../interfaces';
 import { CreateTripDto } from './dto';

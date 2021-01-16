@@ -1,4 +1,4 @@
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import * as ETrip from '../enums';
@@ -42,7 +42,7 @@ export class Trip extends BaseEntity {
   publisher: User;
 
   @ManyToMany(
-    (type) => User,
+    () => User,
     (user) => user.views,
   )
   @JoinColumn()
