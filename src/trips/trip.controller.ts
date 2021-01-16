@@ -1,28 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AMQPHandlerFactory, AMQPHandler } from '../rabbitmq';
+import { Controller, Get, Logger, SetMetadata, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { CurrentUser } from './get-user.decorator';
 import { TripService } from './trip.service';
+import * as IUser from '../interfaces';
+import * as Euser from '../enums';
+import { RoleGuard } from 'guards/local-guard';
 
 @Controller('trips')
 export class TripController {
-  constructor(
-    private readonly tripService: TripService,
-    private readonly tripPubSubHandler: AMQPHandler,
-  ) {}
+  private readonly logger: Logger = new Logger('TripController');
 
-  @Get()
-  @UsePipes(ValidationPipe)
-  getRequest(): Promise<string> {
+  constructor(private readonly tripService: TripService) {}
+
+  @Get('/usertest')
+  @SetMetadata('roles', [Euser.EUserRole.USER])
+  @UseGuards(AuthGuard(['jwt']), RoleGuard)
+  getRequest(@CurrentUser() user: IUser.UserInfo): Promise<string> {
+    this.logger.log(user);
     return this.tripService.getRequest();
-  }
-
-  @Post('/pubtest')
-  postTripPubTest(): void {
-    this.tripPubSubHandler.publishData({ Hello: 'world' });
   }
 }

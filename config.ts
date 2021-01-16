@@ -59,6 +59,11 @@ const configs = {
     HOST: process.env.APPHOST || 'localhost',
     PORT: process.env.APPPORT || 7072,
 
+    JWT: {
+      KEY: process.env.JWTKEY || 'lib',
+      SECRET: process.env.JWTSECRET || 'lib',
+    },
+
     EVENT_STORE_SETTINGS: {
       protocol: process.env.EVENTSTOREPROTOCOL || 'amqp',
       hostname: process.env.EVENTSTOREHOSTNAME || 'localhost',
@@ -79,9 +84,9 @@ const configs = {
       port: process.env.DBPORT || 5433,
       username: process.env.DBUSERNAME || 'postgres',
       password: process.env.DBPASSWORD || '123',
-      database: process.env.DBDATABASE || 'lib',
+      database: process.env.DBDATABASE || 'onepiece',
       schema: process.env.DBSCHEMA || 'public',
-      userTable: process.env.DBRATETABLE || 'onepiece',
+      table: process.env.DBRATETABLE || 'trip',
     },
 
     REDIS_URL: process.env.REDIS_URL || "redis://127.0.0.1:6381",

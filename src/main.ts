@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { config } from '../config';
+import { EventSubscribers } from './subscribers';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule);
@@ -21,10 +22,6 @@ async function bootstrap() {
   });
 
   await app.listen(config.PORT);
-  Logger.log(
-    `Server start on ${config.HOST}:${config.PORT}`,
-    'Bootstrap',
-    true,
-  );
+  Logger.log(`Server start on ${config.HOST}:${config.PORT}`, 'Bootstrap', true);
 }
 bootstrap();
