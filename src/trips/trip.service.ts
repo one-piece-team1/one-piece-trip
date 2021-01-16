@@ -20,6 +20,13 @@ export class TripService {
     return 'Hello World!';
   }
 
+  /**
+   * @description Create Trip Service layer and handling async event publish
+   * @public
+   * @param {IUser.UserInfo | IUser.JwtPayload} user
+   * @param {CreateTripDto} createTripDto
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
   public async createTrip(user: IUser.UserInfo | IUser.JwtPayload, createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
     const { startDate, endDate, publisherId, startPointName, endPointName, publicStatus, companyName, shipNumber } = createTripDto;
 

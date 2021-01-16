@@ -8,6 +8,12 @@ export class TripRepository extends Repository<Trip> {
   private readonly repoManager: EntityManager = getManager();
   private readonly logger: Logger = new Logger('TripRepository');
 
+  /**
+   * @description Create Trip Repo layer
+   * @public
+   * @param {ITrip.ICreateTrip} tripData
+   * @returns {Promise<Trip>}
+   */
   public async createTrip(tripData: ITrip.ICreateTrip): Promise<Trip> {
     const { startDate, endDate, publisher, startPoint, endPoint, publicStatus, companyName, shipNumber } = tripData;
     const trip = new Trip();

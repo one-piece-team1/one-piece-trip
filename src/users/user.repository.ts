@@ -9,7 +9,10 @@ export class UserRepository extends Repository<User> {
   private readonly logger = new Logger('UserRepository');
 
   /**
-   *  @description async createUser Event
+   * @description async createUser Event
+   * @public
+   * @param {User} userReq
+   * @returns {void}
    */
   public createUser(userReq: User): void {
     this.repoManager.save(User, userReq).catch((err) => this.logger.log(err.message, 'CreatUser'));

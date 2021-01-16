@@ -10,7 +10,7 @@ export class TripEventPublishers {
    * @description Pub Data
    * @public
    * @param {any} message
-   * @param {string | undefined} exchangeName
+   * @param {string} exchangeName
    * @returns {Promise<unknown>}
    */
   publishData(message: any, exchangeName: string): Promise<unknown> {
@@ -36,7 +36,7 @@ export class TripEventPublishersFactory {
    * @description Pub Data
    * @public
    * @param {any} message
-   * @param {string | undefined} exchangeName
+   * @param {string} exchangeName
    * @returns {Promise<unknown>}
    */
   static createPub(message: any, exchangeName: string) {
