@@ -4,7 +4,7 @@ import { CurrentUser } from './get-user.decorator';
 import { TripService } from './trip.service';
 import * as ITrip from '../interfaces';
 import * as Euser from '../enums';
-import { RoleGuard } from 'guards/local-guard';
+import { RoleGuard } from '../guards/local-guard';
 import { CreateTripDto } from './dto';
 
 @Controller('trips')

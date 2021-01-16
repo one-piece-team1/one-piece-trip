@@ -5,7 +5,7 @@ import { CreateTripDto } from './dto';
 import { LocationRepository } from 'locations/location.repository';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
-import { UserRepository } from 'users/user.repository';
+import { UserRepository } from '../users/user.repository';
 import { TripHandlerFactory } from '../handlers';
 import * as ETrip from '../enums';
 import * as ITrip from '../interfaces';

@@ -1,13 +1,14 @@
 import * as amqp from 'amqplib/callback_api';
 import { Injectable, Logger } from '@nestjs/common';
-import { UserRepository } from 'users/user.repository';
+import { UserRepository } from '../users/user.repository';
 import { config } from '../../config';
 import * as Event from '../events';
 import { User } from '../users/user.entity';
+import { UpdatePasswordEventDto } from '../users/dto';
 
 interface IReceiveEvent {
   type: Event.UserEvent;
-  data: User;
+  data: User | UpdatePasswordEventDto;
 }
 
 /**
@@ -76,7 +77,9 @@ export class TripEventSubscribers {
     this.logger.log(event, 'TripEventSubscribers');
     switch (jsonEvent.type) {
       case Event.UserEvent.CREATEUSER:
-        return this.userRepository.createUser(jsonEvent.data);
+        return this.userRepository.createUser(jsonEvent.data as User);
+      case Event.UserEvent.UPDATEUSERPASSWORD:
+        return this.userRepository.updateUserPassword(jsonEvent.data as UpdatePasswordEventDto);
     }
   }
 }
