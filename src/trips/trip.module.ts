@@ -3,13 +3,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LocationRepository } from 'locations/location.repository';
-import { AMQPHandler } from 'rabbitmq';
-import { UserRepository } from 'users/user.repository';
+import { UserRepository } from '../users/user.repository';
 import { JwtStrategy } from './strategy';
 import { TripController } from './trip.controller';
 import { TripRepository } from './trip.repository';
 import { TripService } from './trip.service';
-import { EventSubscribers } from '../subscribers';
+import { TripEventSubscribers } from '../subscribers';
 import { config } from '../../config';
 
 @Module({
@@ -33,6 +32,6 @@ import { config } from '../../config';
     TypeOrmModule.forFeature([TripRepository, LocationRepository, UserRepository]),
   ],
   controllers: [TripController],
-  providers: [TripService, JwtStrategy, EventSubscribers],
+  providers: [TripService, JwtStrategy, TripEventSubscribers],
 })
 export class TripModule {}

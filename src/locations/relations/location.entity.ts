@@ -7,8 +7,8 @@ import { Trip } from 'trips/trip.entity';
 @Entity()
 @Unique(['locationName'])
 export class Location extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   /**
    * @description location Point fields with point & srid & lon & lat
@@ -34,9 +34,6 @@ export class Location extends BaseEntity {
 
   @Column({ type: 'float', nullable: false })
   lon: number;
-
-  @Column({ type: 'float', nullable: true })
-  length?: number;
 
   /**
    * @description Enum location type
