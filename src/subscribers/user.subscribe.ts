@@ -3,10 +3,11 @@ import { UserCreditDto } from 'users/dto';
 import { UserRepository } from 'users/user.repository';
 import { AMQPHandlerFactory } from 'rabbitmq';
 import * as Event from '../events';
+import { User } from '../users/user.entity';
 
 interface IReceiveEvent {
   type: Event.UserEvent;
-  data: UserCreditDto;
+  data: User;
 }
 
 /**
@@ -40,7 +41,7 @@ export class EventSubscribers {
     const jsonEvent: IReceiveEvent = JSON.parse(event);
     switch (jsonEvent.type) {
       case Event.UserEvent.CREATEUSER:
-        return this.userRepository.signUp(jsonEvent.data);
+        return this.userRepository.createUser(jsonEvent.data);
     }
   }
 }

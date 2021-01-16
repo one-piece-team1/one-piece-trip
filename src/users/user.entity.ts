@@ -1,4 +1,4 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, Unique, Index, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, ManyToMany, AfterLoad } from 'typeorm';
+import { Entity, BaseEntity, Column, Unique, Index, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, ManyToMany, AfterLoad, PrimaryColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as EUser from '../enums';
 import { Trip } from 'trips/trip.entity';
@@ -6,7 +6,7 @@ import { Trip } from 'trips/trip.entity';
 @Entity()
 @Unique(['username', 'email'])
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   /**
