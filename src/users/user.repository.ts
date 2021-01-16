@@ -2,7 +2,7 @@ import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs
 import { Repository, EntityRepository, getManager, EntityManager, Not } from 'typeorm';
 import { User } from './user.entity';
 import * as IUser from '../interfaces';
-import { UpdatePasswordEventDto } from './dto';
+import { DeleteUserEventDto, UpdatePasswordEventDto } from './dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -11,6 +11,7 @@ export class UserRepository extends Repository<User> {
 
   /**
    * @description async createUser Event
+   * @event
    * @public
    * @param {User} userReq
    * @returns {void}
@@ -49,11 +50,33 @@ export class UserRepository extends Repository<User> {
     }
   }
 
-  public async updateUserPassword(updatePasswordEventDto: UpdatePasswordEventDto) {
+  /**
+   * @description Update user password
+   * @event
+   * @public
+   * @param {UpdatePasswordEventDto} updatePasswordEventDto
+   * @returns {void}
+   */
+  public updateUserPassword(updatePasswordEventDto: UpdatePasswordEventDto): void {
     const { id, salt, password } = updatePasswordEventDto;
     this.repoManager
       .getRepository(User)
       .update(id, { salt, password })
       .catch((err) => this.logger.log(err.message, 'UpdateUserPassword'));
+  }
+
+  /**
+   * @description Soft delete user
+   * @event
+   * @public
+   * @param {DeleteUserEventDto} deleteUserEventDto
+   * @returns {void}
+   */
+  public softDeleteUser(deleteUserEventDto: DeleteUserEventDto): void {
+    const { id } = deleteUserEventDto;
+    this.repoManager
+      .getRepository(User)
+      .update(id, { status: false })
+      .catch((err) => this.logger.log(err.message, 'SoftDeleteUser'));
   }
 }
