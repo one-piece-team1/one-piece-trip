@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LocationRepository } from 'locations/location.repository';
 import { UserRepository } from '../users/user.repository';
-import { JwtStrategy } from './strategy';
+import { JwtStrategy } from '../strategy';
 import { TripController } from './trip.controller';
 import { TripRepository } from './trip.repository';
 import { TripService } from './trip.service';

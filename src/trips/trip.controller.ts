@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Logger, Post, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from './get-user.decorator';
+import { CurrentUser } from '../strategy';
 import { TripService } from './trip.service';
 import * as ITrip from '../interfaces';
 import * as Euser from '../enums';
