@@ -9,6 +9,7 @@ import { PostRepository } from './post.repository';
 import { PostService } from './post.service';
 import { JwtStrategy } from '../strategy';
 import { config } from '../../config';
+import { PostEventSubscribers } from 'subscribers';
 
 @Module({
   imports: [
@@ -31,6 +32,6 @@ import { config } from '../../config';
     TypeOrmModule.forFeature([PostRepository, TripRepository, UserRepository]),
   ],
   controllers: [PostController],
-  providers: [PostService, JwtStrategy],
+  providers: [PostService, JwtStrategy, PostEventSubscribers],
 })
 export class PostModule {}
