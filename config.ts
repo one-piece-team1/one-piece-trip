@@ -64,6 +64,13 @@ const configs = {
       SECRET: process.env.JWTSECRET || 'lib',
     },
 
+    CLOUDINARY: {
+      NAME: process.env.CLOUDINARY_APINAME,
+      KEY: process.env.CLOUDINARY_APIKEY,
+      SECRET: process.env.CLOUDINARY_APISECRET,
+      URL: process.env.CLOUDINARY_APIURL,
+    },
+
     EVENT_STORE_SETTINGS: {
       protocol: process.env.EVENTSTOREPROTOCOL || 'amqp',
       hostname: process.env.EVENTSTOREHOSTNAME || 'localhost',

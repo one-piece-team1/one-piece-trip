@@ -32,4 +32,15 @@ export class TripRepository extends Repository<Trip> {
     }
     return trip;
   }
+
+  public async verifyByTripById(id: string): Promise<Trip> {
+    const query = this.createQueryBuilder('trip');
+    query.leftJoinAndSelect('trip.publisher', 'publisher');
+    query.andWhere('trip.id = :id', { id });
+    try {
+      return query.getOne();
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

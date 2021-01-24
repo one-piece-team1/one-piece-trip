@@ -1,8 +1,8 @@
 import { Entity, BaseEntity, Column, Unique, Index, BeforeInsert, BeforeUpdate, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, ManyToMany, AfterLoad, PrimaryColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as EUser from '../enums';
-import { Trip } from 'trips/trip.entity';
-import { Post } from 'posts/post.entity';
+import { Trip } from '../trips/trip.entity';
+import { Post } from '../posts/post.entity';
 
 @Entity()
 @Unique(['username', 'email'])
@@ -93,6 +93,15 @@ export class User extends BaseEntity {
   )
   @JoinColumn()
   views: Trip[];
+
+  /**
+   *
+   */
+  @OneToMany(
+    () => Post,
+    (post) => post.publisher,
+  )
+  posts: Post[];
 
   /**
    * @description Relation Area with post like

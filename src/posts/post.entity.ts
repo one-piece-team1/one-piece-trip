@@ -1,6 +1,6 @@
-import { Trip } from 'trips/trip.entity';
 import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { User } from 'users/user.entity';
+import { User } from '../users/user.entity';
+import { Trip } from '../trips/trip.entity';
 import * as ETrip from '../enums';
 
 @Entity()
@@ -26,6 +26,16 @@ export class Post extends BaseEntity {
   publicStatus: ETrip.ETripView;
 
   /**
+   * @description Relation Area with user
+   */
+  @ManyToOne(
+    () => User,
+    (user) => user.posts,
+  )
+  @JoinColumn()
+  publisher: User;
+
+  /**
    * @description Relation Area with user like
    */
   @ManyToMany(
@@ -33,7 +43,7 @@ export class Post extends BaseEntity {
     (user) => user.likePosts,
   )
   @JoinColumn()
-  likeUsers: User[];
+  likeUsers?: User[];
 
   /**
    * @description Relation Area with trip

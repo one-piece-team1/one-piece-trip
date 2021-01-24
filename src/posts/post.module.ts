@@ -10,6 +10,7 @@ import { PostService } from './post.service';
 import { JwtStrategy } from '../strategy';
 import { config } from '../../config';
 import { PostEventSubscribers } from 'subscribers';
+import { Uploader } from '../libs/cloudinary';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { PostEventSubscribers } from 'subscribers';
     TypeOrmModule.forFeature([PostRepository, TripRepository, UserRepository]),
   ],
   controllers: [PostController],
-  providers: [PostService, JwtStrategy, PostEventSubscribers],
+  providers: [PostService, JwtStrategy, PostEventSubscribers, Uploader],
 })
 export class PostModule {}
