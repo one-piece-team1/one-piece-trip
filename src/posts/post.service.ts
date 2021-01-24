@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto';
 import { UserRepository } from '../users/user.repository';
@@ -76,6 +76,27 @@ export class PostService {
       };
     } catch (error) {
       this.logger.log(error.message, 'CreatePost');
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  public async getPostById(user: ITrip.UserInfo | ITrip.JwtPayload, postId: string) {
+    try {
+      const post = await this.postRepository.getPostById(postId, user.id);
+      if (!post) throw new NotFoundException(`Post ${postId} not found`);
+      return {
+        statusCode: HttpStatus.OK,
+        status: 'success',
+        message: post,
+      };
+    } catch (error) {
+      this.logger.log(error.message, 'GetPostById');
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
