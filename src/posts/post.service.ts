@@ -3,11 +3,11 @@ import { PostRepository } from './post.repository';
 import { CreatePostDto } from './dto';
 import { UserRepository } from '../users/user.repository';
 import { User } from '../users/user.entity';
-
+import { TripRepository } from '../trips/trip.repository';
+import { Uploader } from '../libs/cloudinary';
+import { PostHandlerFactory } from '../handlers/post.handler';
 import * as ITrip from '../interfaces';
 import * as ETrip from '../enums';
-import { TripRepository } from 'trips/trip.repository';
-import { Uploader } from '../libs/cloudinary';
 
 @Injectable()
 export class PostService {
@@ -68,7 +68,9 @@ export class PostService {
 
     try {
       const post_result = await this.postRepository.createPost(createPostDto, trip, publisher);
-      console.log('post_result: ', post_result);
+      if (post_result) {
+        PostHandlerFactory.createPost(post_result);
+      }
       return {
         statusCode: HttpStatus.CREATED,
         status: 'success',
