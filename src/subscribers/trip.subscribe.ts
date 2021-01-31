@@ -4,7 +4,7 @@ import { UserRepository } from '../users/user.repository';
 import { config } from '../../config';
 import * as Event from '../events';
 import { User } from '../users/user.entity';
-import { UpdatePasswordEventDto, DeleteUserEventDto } from '../users/dto';
+import { UpdatePasswordEventDto, DeleteUserEventDto, UpdateUserAdditionalInfoPublishDto } from '../users/dto';
 
 interface IReceiveEvent {
   type: Event.UserEvent;
@@ -80,6 +80,8 @@ export class TripEventSubscribers {
         return this.userRepository.createUser(jsonEvent.data as User);
       case Event.UserEvent.UPDATEUSERPASSWORD:
         return this.userRepository.updateUserPassword(jsonEvent.data as UpdatePasswordEventDto);
+      case Event.UserEvent.UPDATEUSERADDITIONALINFO:
+        return this.userRepository.updateUserAdditionalInfo(jsonEvent.data as UpdateUserAdditionalInfoPublishDto);
       case Event.UserEvent.SOFTDELETEUSER:
         return this.userRepository.softDeleteUser(jsonEvent.data as DeleteUserEventDto);
     }

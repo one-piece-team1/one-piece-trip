@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import * as Cloudinary from 'cloudinary';
 import * as fs from 'fs';
 import { join } from 'path';
@@ -15,13 +15,31 @@ export class Uploader {
     });
   }
 
+  private isDirectoryExist(): Promise<boolean> {
+    const path: string = join(process.cwd(), 'public/assets');
+    return new Promise((resolve, reject) => {
+      fs.stat(path, (err, stats) => {
+        if (!stats) {
+          fs.mkdirSync(join(process.cwd(), 'public'));
+          fs.mkdirSync(join(process.cwd(), 'public/assets'));
+          resolve(true);
+        } else {
+          return resolve(true);
+        }
+      });
+    });
+  }
+
   /**
    * @description Create Write Stream
    * @private
    * @param {ITrip.BufferedFile} file
    * @returns {Promise<boolean>}
    */
-  private writeStream(file: ITrip.BufferedFile): Promise<boolean> {
+  private async writeStream(file: ITrip.BufferedFile): Promise<boolean> {
+    const isDir = await this.isDirectoryExist();
+    if (!isDir) throw new InternalServerErrorException('Directory not existed');
+
     return new Promise((resolve, reject) => {
       fs.createWriteStream(join(process.cwd(), `public/assets/${file.originalname}`)).write(Buffer.from(file.buffer['data']), (err) => {
         if (err) return reject(false);
