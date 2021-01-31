@@ -1,7 +1,8 @@
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import * as ETrip from '../enums';
+import { Post } from 'posts/post.entity';
 
 @Entity()
 export class Trip extends BaseEntity {
@@ -23,7 +24,7 @@ export class Trip extends BaseEntity {
     default: ETrip.ETripView.PUBLIC,
     nullable: false,
   })
-  publicStatus: string;
+  publicStatus: ETrip.ETripView;
 
   @Column({ type: 'varchar', nullable: true })
   companyName?: string;
@@ -47,6 +48,15 @@ export class Trip extends BaseEntity {
   )
   @JoinColumn()
   viewers: User[];
+
+  /**
+   * @description Relation Area with post
+   */
+  @OneToMany(
+    () => Post,
+    (post) => post.trip,
+  )
+  posts: Post[];
 
   /**
    * @description Relation Area with location

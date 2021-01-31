@@ -53,3 +53,6 @@ ex.json
 # env
 *.env
 *.dev.env
+
+# public files
+public/assets/
