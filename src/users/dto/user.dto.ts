@@ -109,3 +109,22 @@ export class DeleteUserEventDto {
   @IsUUID()
   id: string;
 }
+
+export class UpdateUserAdditionalInfoDto {
+  @IsOptional()
+  gender?: EUser.EUserGender;
+
+  @IsOptional()
+  age?: number;
+
+  @IsOptional()
+  desc?: string;
+}
+
+export class UpdateUserAdditionalInfoPublishDto extends UpdateUserAdditionalInfoDto {
+  @IsUUID()
+  id: string;
+
+  @IsOptional()
+  profileImage?: string;
+}

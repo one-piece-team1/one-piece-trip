@@ -2,7 +2,7 @@ import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs
 import { Repository, EntityRepository, getManager, EntityManager, Not } from 'typeorm';
 import { User } from './user.entity';
 import * as IUser from '../interfaces';
-import { DeleteUserEventDto, UpdatePasswordEventDto } from './dto';
+import { DeleteUserEventDto, UpdatePasswordEventDto, UpdateUserAdditionalInfoPublishDto } from './dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -63,6 +63,21 @@ export class UserRepository extends Repository<User> {
       .getRepository(User)
       .update(id, { salt, password })
       .catch((err) => this.logger.log(err.message, 'UpdateUserPassword'));
+  }
+
+  /**
+   * @description Update user additional info
+   * @event
+   * @public
+   * @param {UpdateUserAdditionalInfoPublishDto} updateUserAdditionalInfoPublishDto
+   * @returns {void}
+   */
+  public updateUserAdditionalInfo(updateUserAdditionalInfoPublishDto: UpdateUserAdditionalInfoPublishDto) {
+    const { id, gender, age, desc, profileImage } = updateUserAdditionalInfoPublishDto;
+    this.repoManager
+      .getRepository(User)
+      .update(id, { gender, age, desc, profileImage })
+      .catch((err) => this.logger.log(err.message, 'UpdateUserAdditionalInfo'));
   }
 
   /**
