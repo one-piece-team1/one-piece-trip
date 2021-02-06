@@ -108,4 +108,25 @@ export class PostService {
       );
     }
   }
+
+  public async getPosts(user: ITrip.UserInfo | ITrip.JwtPayload, searchDto: ITrip.ISearch) {
+    if (!searchDto.keyword) searchDto.keyword = '';
+    if (!searchDto.sort) searchDto.sort = 'DESC';
+    const isAdmin = user.role === ETrip.EUserRole.ADMIN;
+    const { posts, count } = await this.postRepository.getPosts(searchDto, isAdmin);
+    if (!posts || !count) {
+      return new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Post Not Found'
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      posts,
+      count,
+    }
+  }
 }

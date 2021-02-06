@@ -4,6 +4,7 @@ import { CreatePostDto } from './dto';
 import { Post } from './post.entity';
 import { Trip } from '../trips/trip.entity';
 import { User } from '../users/user.entity';
+import * as ITrip from '../interfaces';
 import { config } from '../../config';
 
 @EntityRepository(Post)
@@ -34,6 +35,41 @@ export class PostRepository extends Repository<Post> {
       return await this.findOne({ where: { id, publisher: publisher_id } });
     } catch (error) {
       this.logger.log(error.message, 'GetPostById');
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  public async getPosts(searchDto: ITrip.ISearch, isAdmin: boolean) {
+    const take = searchDto.take ? Number(searchDto.take) : 10;
+    const skip = searchDto.skip ? Number(searchDto.skip) : 0;
+
+    const searchOpts: ITrip.IQueryPaging = {
+      take,
+      skip,
+      order: {
+        updatedAt: searchDto.sort,
+      },
+    };
+
+    try {
+      const [posts, count] = await this.repoManager.findAndCount(Post, {
+        take,
+        skip,
+        relations: ["publisher", "trip"],
+        order: {
+          updatedAt: searchDto.sort,
+        }
+      });
+      posts.forEach(post => {
+        delete post.publisher.password;
+        delete post.publisher.salt;
+      });
+      return {
+        posts,
+        count,
+      };
+    } catch (error) {
+      this.logger.log(error.message, 'GetPosts');
       throw new InternalServerErrorException(error.message);
     }
   }
