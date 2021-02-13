@@ -5,7 +5,6 @@ import { Post } from './post.entity';
 import { Trip } from '../trips/trip.entity';
 import { User } from '../users/user.entity';
 import * as ITrip from '../interfaces';
-import { config } from '../../config';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -13,7 +12,16 @@ export class PostRepository extends Repository<Post> {
   private readonly logger: Logger = new Logger('PostRepository');
   private readonly cloudinaryBaseUrl: string = 'https://res.cloudinary.com/ahoyapp/image/upload';
 
-  public async createPost(createPostDto: CreatePostDto, trip: Trip, user: User) {
+  /**
+   * @description Create post includes user authentication and trip verification
+   * - also updating post images to CDN and store it's url string
+   * @public
+   * @param {CreatePostDto} createPostDto
+   * @param {Trip} trip
+   * @param {User} user
+   * @returns {Promise<Post>}
+   */
+  public async createPost(createPostDto: CreatePostDto, trip: Trip, user: User): Promise<Post> {
     const { content, publicStatus, files } = createPostDto;
     const post = new Post();
     post.content = content;
@@ -30,6 +38,13 @@ export class PostRepository extends Repository<Post> {
     return post;
   }
 
+  /**
+   * @description Get post by it's primary key also join publisher and trips data
+   * @public
+   * @param {string} id publish post primary key
+   * @param {string} publisher_id publish user primary key
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
   public async getPostById(id: string, publisher_id: string): Promise<Post> {
     try {
       return await this.findOne({ where: { id, publisher: publisher_id } });
@@ -39,10 +54,20 @@ export class PostRepository extends Repository<Post> {
     }
   }
 
+  /**
+   * @description Get Posts by paging
+   * @todo User relations blocking for trip publicStatus and post publicStatus
+   * - In the first release everything is default also 'public' with all created data to default to public as well
+   * @public
+   * @param {ITrip.ISearch} searchDto
+   * @param {boolean} isAdmin
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
+  // eslint-disable-next-line
   public async getPosts(searchDto: ITrip.ISearch, isAdmin: boolean) {
     const take = searchDto.take ? Number(searchDto.take) : 10;
     const skip = searchDto.skip ? Number(searchDto.skip) : 0;
-
+    // eslint-disable-next-line
     const searchOpts: ITrip.IQueryPaging = {
       take,
       skip,

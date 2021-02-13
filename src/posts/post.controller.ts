@@ -1,4 +1,4 @@
-import { Controller, Get, SetMetadata, UseGuards, Post, UseInterceptors, Request, Body, ValidationPipe, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, Get, SetMetadata, UseGuards, Post, Body, ValidationPipe, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'guards/local-guard';
 import { CurrentUser } from '../strategy';

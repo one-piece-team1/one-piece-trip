@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { Request } from 'express';
+import { MultiLineString } from 'geojson';
 import { TripRepository } from './trip.repository';
 import * as IUser from '../interfaces';
-import { CreateTripDto } from './dto';
+import { CreateTripDto, GetTripByIdDto, GetTripByPagingDto } from './dto';
 import { LocationRepository } from 'locations/location.repository';
 import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
@@ -11,7 +12,6 @@ import { TripHandlerFactory } from '../handlers';
 import { RoutePlanProvider } from '../providers/route-plan.provider';
 import * as ETrip from '../enums';
 import * as ITrip from '../interfaces';
-import { MultiLineString } from 'geojson';
 
 @Injectable()
 export class TripService {
@@ -110,6 +110,97 @@ export class TripService {
       };
     } catch (error) {
       this.logger.log(error.message, 'CreateTripError');
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * @description Get trip by id
+   * @public
+   * @param {IUser.UserInfo | IUser.JwtPayload} user
+   * @param {GetTripByIdDto} getTripByIdDto
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
+  public async getTripById(user: IUser.UserInfo | IUser.JwtPayload, getTripByIdDto: GetTripByIdDto): Promise<ITrip.ResponseBase> {
+    if (user.id !== getTripByIdDto.publisherId)
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'Invalid credential',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    const isAdmin: boolean = user.role === ETrip.EUserRole.ADMIN;
+    const publisher: User = await this.userRepository.getUserById(user.id, isAdmin);
+    if (!publisher)
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'User not found',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+
+    try {
+      const trip = await this.tripRepository.getTripById(getTripByIdDto);
+      return {
+        statusCode: HttpStatus.OK,
+        status: 'success',
+        message: trip,
+      };
+    } catch (error) {
+      this.logger.log(error.message, 'GetTripById');
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * @description Get trips by paging and search optioning by selfQuerying or not
+   * - Self Query means if user is doing paging-query for it's own trip or not
+   * @public
+   * @param {IUser.UserInfo | IUser.JwtPayload} user
+   * @param {GetTripByPagingDto} getTripByPagingDto
+   * @returns {Promise<{ trips: Trip[]; count: number }>}
+   */
+  public async getTripByPaging(user: IUser.UserInfo | IUser.JwtPayload, getTripByPagingDto: GetTripByPagingDto): Promise<ITrip.ResponseBase> {
+    if (!getTripByPagingDto.keyword) getTripByPagingDto.keyword = '';
+    if (!getTripByPagingDto.sort) getTripByPagingDto.sort = 'DESC';
+
+    const isSelfQuery: boolean = user.id === getTripByPagingDto.publisherId;
+
+    try {
+      const { trips, count } = await this.tripRepository.getTripByPaging(getTripByPagingDto, isSelfQuery);
+      if (!trips || !count)
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Trips Not Found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+
+      return {
+        statusCode: HttpStatus.OK,
+        status: 'success',
+        message: {
+          trips,
+          count,
+        },
+      };
+    } catch (error) {
+      this.logger.log(error.message, 'GetTripByPaging');
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,

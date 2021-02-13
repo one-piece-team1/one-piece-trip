@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Post, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { CurrentUser } from '../strategy';
@@ -6,7 +6,7 @@ import { TripService } from './trip.service';
 import * as ITrip from '../interfaces';
 import * as Euser from '../enums';
 import { RoleGuard } from '../guards/local-guard';
-import { CreateTripDto } from './dto';
+import { CreateTripDto, GetTripByIdDto, GetTripByPagingDto } from './dto';
 
 @Controller('trips')
 export class TripController {
@@ -20,6 +20,20 @@ export class TripController {
   getRequest(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload): Promise<string> {
     this.logger.log(JSON.stringify(user), 'AdminTest');
     return this.tripService.getRequest();
+  }
+
+  @Get('/paging')
+  @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
+  @UseGuards(AuthGuard(['jwt']), RoleGuard)
+  getTripByPaging(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Query(ValidationPipe) getTripByPagingDto: GetTripByPagingDto) {
+    return this.tripService.getTripByPaging(user, getTripByPagingDto);
+  }
+
+  @Get('/:id/publishers/:publisherId')
+  @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
+  @UseGuards(AuthGuard(['jwt']), RoleGuard)
+  getTripById(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Param(ValidationPipe) getTripByIdDto: GetTripByIdDto): Promise<ITrip.ResponseBase> {
+    return this.tripService.getTripById(user, getTripByIdDto);
   }
 
   @Post('/')

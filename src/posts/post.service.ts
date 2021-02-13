@@ -19,7 +19,15 @@ export class PostService {
     return 'Hello World!';
   }
 
-  public async createPost(user: ITrip.UserInfo | ITrip.JwtPayload, createPostDto: CreatePostDto) {
+  /**
+   * @description Create post includes user authentication and trip verification
+   * - also updating post images to CDN and store it's url string
+   * @public
+   * @param {ITrip.UserInfo | ITrip.JwtPayload} user
+   * @param {CreatePostDto} createPostDto
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
+  public async createPost(user: ITrip.UserInfo | ITrip.JwtPayload, createPostDto: CreatePostDto): Promise<ITrip.ResponseBase> {
     const { tripId, publisherId, files } = createPostDto;
 
     // check user information if it's pass user is valid
@@ -88,7 +96,14 @@ export class PostService {
     }
   }
 
-  public async getPostById(user: ITrip.UserInfo | ITrip.JwtPayload, postId: string) {
+  /**
+   * @description Get post by it's primary key also join publisher and trips data
+   * @public
+   * @param {ITrip.UserInfo | ITrip.JwtPayload} user
+   * @param {string} postId
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
+  public async getPostById(user: ITrip.UserInfo | ITrip.JwtPayload, postId: string): Promise<ITrip.ResponseBase> {
     try {
       const post = await this.postRepository.getPostById(postId, user.id);
       if (!post) throw new NotFoundException(`Post ${postId} not found`);
@@ -109,24 +124,45 @@ export class PostService {
     }
   }
 
-  public async getPosts(user: ITrip.UserInfo | ITrip.JwtPayload, searchDto: ITrip.ISearch) {
+  /**
+   * @description Get Posts by paging
+   * @public
+   * @param {ITrip.UserInfo | ITrip.JwtPayload} user
+   * @param {ITrip.ISearch} searchDto
+   * @returns {Promise<ITrip.ResponseBase>}
+   */
+  public async getPosts(user: ITrip.UserInfo | ITrip.JwtPayload, searchDto: ITrip.ISearch): Promise<ITrip.ResponseBase> {
     if (!searchDto.keyword) searchDto.keyword = '';
     if (!searchDto.sort) searchDto.sort = 'DESC';
     const isAdmin = user.role === ETrip.EUserRole.ADMIN;
-    const { posts, count } = await this.postRepository.getPosts(searchDto, isAdmin);
-    if (!posts || !count) {
-      return new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Post Not Found',
+    try {
+      const { posts, count } = await this.postRepository.getPosts(searchDto, isAdmin);
+      if (!posts || !count) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Post Not Found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        status: 'success',
+        message: {
+          posts,
+          count,
         },
-        HttpStatus.NOT_FOUND,
+      };
+    } catch (error) {
+      this.logger.log(error.message, 'GetPosts');
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: error.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    return {
-      posts,
-      count,
-    };
   }
 }
