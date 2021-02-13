@@ -86,6 +86,14 @@ const configs = {
       },
     },
 
+    MS_SETTINGS: {
+      ONE_PIECE_LOCATION: {
+        protocol: process.env.LOCATIONPROTOCOL || 'http',
+        host: process.env.LOCATIONSERVERHOST || '127.0.0.1',
+        port: process.env.LOCATIONSERVERPORT || 7074
+      }
+    },
+
     DB_SETTINGS: {
       host: process.env.DBHOST || 'localhost',
       port: process.env.DBPORT || 5433,

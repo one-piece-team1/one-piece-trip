@@ -15,20 +15,22 @@ export class TripRepository extends Repository<Trip> {
    * @returns {Promise<Trip>}
    */
   public async createTrip(tripData: ITrip.ICreateTrip): Promise<Trip> {
-    const { startDate, endDate, publisher, startPoint, endPoint, publicStatus, companyName, shipNumber } = tripData;
+    const { startDate, endDate, publisher, startPoint, endPoint, publicStatus, companyName, shipNumber, geom } = tripData;
     const trip = new Trip();
     trip.startDate = new Date(startDate);
     trip.endDate = new Date(endDate);
     trip.publicStatus = publicStatus;
     if (companyName) trip.companyName = companyName;
     if (shipNumber) trip.shipNumber = shipNumber;
+    if (geom) trip.geom = geom;
     trip.publisher = publisher;
     trip.startPoint = startPoint;
     trip.endPoint = endPoint;
     try {
       await trip.save();
     } catch (error) {
-      throw new InternalServerErrorException();
+      this.logger.log(error.message, 'CreateTripError');
+      throw new InternalServerErrorException(error);
     }
     return trip;
   }

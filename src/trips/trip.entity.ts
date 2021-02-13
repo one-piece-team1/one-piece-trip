@@ -3,6 +3,7 @@ import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import * as ETrip from '../enums';
 import { Post } from 'posts/post.entity';
+import { MultiLineString } from 'geojson';
 
 @Entity()
 export class Trip extends BaseEntity {
@@ -26,11 +27,22 @@ export class Trip extends BaseEntity {
   })
   publicStatus: ETrip.ETripView;
 
+  /**
+   * @description Unnecessary fields but maybe necessary in the future depends we have open data for those fields or not
+   */
   @Column({ type: 'varchar', nullable: true })
   companyName?: string;
 
   @Column({ type: 'varchar', nullable: true })
   shipNumber?: string;
+
+  @Column({
+    type: 'geometry',
+    nullable: true,
+    spatialFeatureType: 'MultiLineString',
+    srid: 4326,
+  })
+  geom?: MultiLineString;
 
   /**
    * @description Relation Area with User

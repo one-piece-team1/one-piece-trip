@@ -10,6 +10,7 @@ import { TripRepository } from './trip.repository';
 import { TripService } from './trip.service';
 import { TripEventSubscribers } from '../subscribers';
 import { config } from '../../config';
+import { RoutePlanProvider } from '../providers/route-plan.provider';
 
 @Module({
   imports: [
@@ -32,6 +33,6 @@ import { config } from '../../config';
     TypeOrmModule.forFeature([TripRepository, LocationRepository, UserRepository]),
   ],
   controllers: [TripController],
-  providers: [TripService, JwtStrategy, TripEventSubscribers],
+  providers: [TripService, JwtStrategy, TripEventSubscribers, RoutePlanProvider],
 })
 export class TripModule {}
