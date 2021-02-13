@@ -64,6 +64,13 @@ const configs = {
       SECRET: process.env.JWTSECRET || 'lib',
     },
 
+    CLOUDINARY: {
+      NAME: process.env.CLOUDINARY_APINAME,
+      KEY: process.env.CLOUDINARY_APIKEY,
+      SECRET: process.env.CLOUDINARY_APISECRET,
+      URL: process.env.CLOUDINARY_APIURL,
+    },
+
     EVENT_STORE_SETTINGS: {
       protocol: process.env.EVENTSTOREPROTOCOL || 'amqp',
       hostname: process.env.EVENTSTOREHOSTNAME || 'localhost',
@@ -77,6 +84,14 @@ const configs = {
         min: process.env.EVENTSTOREPOOLOPTIONSMIN || 1,
         max: process.env.EVENTSTOREPOOLOPTIONSMAX || 10,
       },
+    },
+
+    MS_SETTINGS: {
+      ONE_PIECE_LOCATION: {
+        protocol: process.env.LOCATIONPROTOCOL || 'http',
+        host: process.env.LOCATIONSERVERHOST || '127.0.0.1',
+        port: process.env.LOCATIONSERVERPORT || 7074
+      }
     },
 
     DB_SETTINGS: {

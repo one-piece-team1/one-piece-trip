@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LocationRepository } from 'locations/location.repository';
-import { UserRepository } from '../users/user.repository';
+import { TripRepository } from 'trips/trip.repository';
+import { UserRepository } from 'users/user.repository';
+import { PostController } from './post.controller';
+import { PostRepository } from './post.repository';
+import { PostService } from './post.service';
 import { JwtStrategy } from '../strategy';
-import { TripController } from './trip.controller';
-import { TripRepository } from './trip.repository';
-import { TripService } from './trip.service';
-import { TripEventSubscribers } from '../subscribers';
 import { config } from '../../config';
-import { RoutePlanProvider } from '../providers/route-plan.provider';
+import { PostEventSubscribers } from 'subscribers';
+import { Uploader } from '../libs/cloudinary';
 
 @Module({
   imports: [
@@ -30,9 +30,9 @@ import { RoutePlanProvider } from '../providers/route-plan.provider';
         algorithms: ['HS256'],
       },
     }),
-    TypeOrmModule.forFeature([TripRepository, LocationRepository, UserRepository]),
+    TypeOrmModule.forFeature([PostRepository, TripRepository, UserRepository]),
   ],
-  controllers: [TripController],
-  providers: [TripService, JwtStrategy, TripEventSubscribers, RoutePlanProvider],
+  controllers: [PostController],
+  providers: [PostService, JwtStrategy, PostEventSubscribers, Uploader],
 })
-export class TripModule {}
+export class PostModule {}

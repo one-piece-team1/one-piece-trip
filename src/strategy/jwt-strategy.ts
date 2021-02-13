@@ -1,12 +1,12 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { JwtPayload } from '../../interfaces';
+import { JwtPayload } from '../interfaces';
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import Redis from 'ioredis';
 import { Request } from 'express';
-import { UserRepository } from '../../users/user.repository';
-import { User } from '../../users/user.entity';
-import { config } from '../../../config';
+import { UserRepository } from '../users/user.repository';
+import { User } from '../users/user.entity';
+import { config } from '../../config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
