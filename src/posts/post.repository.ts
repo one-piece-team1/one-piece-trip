@@ -5,7 +5,6 @@ import { Post } from './post.entity';
 import { Trip } from '../trips/trip.entity';
 import { User } from '../users/user.entity';
 import * as ITrip from '../interfaces';
-import { config } from '../../config';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
@@ -39,10 +38,11 @@ export class PostRepository extends Repository<Post> {
     }
   }
 
+  // eslint-disable-next-line
   public async getPosts(searchDto: ITrip.ISearch, isAdmin: boolean) {
     const take = searchDto.take ? Number(searchDto.take) : 10;
     const skip = searchDto.skip ? Number(searchDto.skip) : 0;
-
+    // eslint-disable-next-line
     const searchOpts: ITrip.IQueryPaging = {
       take,
       skip,

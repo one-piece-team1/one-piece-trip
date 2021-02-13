@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Logger, Param, ParseUUIDPipe, Post, Query, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { CurrentUser } from '../strategy';

@@ -1,5 +1,5 @@
-import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { EntityManager, EntityRepository, getManager, Not, Equal, Like, Repository } from 'typeorm';
+import { InternalServerErrorException, Logger } from '@nestjs/common';
+import { EntityManager, EntityRepository, getManager, Not, Equal, Repository } from 'typeorm';
 import { Trip } from './trip.entity';
 import * as ITrip from '../interfaces';
 import { GetTripByIdDto, GetTripByPagingDto } from './dto';

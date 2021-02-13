@@ -22,6 +22,7 @@ export class Uploader {
    */
   private isDirectoryExist(): Promise<boolean> {
     const path: string = join(process.cwd(), 'public/assets');
+    // eslint-disable-next-line
     return new Promise((resolve, reject) => {
       fs.stat(path, (err, stats) => {
         if (!stats) {
