@@ -55,12 +55,12 @@ export class PostRepository extends Repository<Post> {
       const [posts, count] = await this.repoManager.findAndCount(Post, {
         take,
         skip,
-        relations: ["publisher", "trip"],
+        relations: ['publisher', 'trip'],
         order: {
           updatedAt: searchDto.sort,
-        }
+        },
       });
-      posts.forEach(post => {
+      posts.forEach((post) => {
         delete post.publisher.password;
         delete post.publisher.salt;
       });

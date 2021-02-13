@@ -118,7 +118,7 @@ export class PostService {
       return new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'Post Not Found'
+          error: 'Post Not Found',
         },
         HttpStatus.NOT_FOUND,
       );
@@ -127,6 +127,6 @@ export class PostService {
     return {
       posts,
       count,
-    }
+    };
   }
 }

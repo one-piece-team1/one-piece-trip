@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Logger, Post, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { CurrentUser } from '../strategy';
 import { TripService } from './trip.service';
 import * as ITrip from '../interfaces';
@@ -24,7 +25,7 @@ export class TripController {
   @Post('/')
   @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
   @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  createTrip(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
-    return this.tripService.createTrip(user, createTripDto);
+  createTrip(@Req() req: Request, @CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
+    return this.tripService.createTrip(req, user, createTripDto);
   }
 }

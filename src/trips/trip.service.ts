@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Request } from 'express';
 import { TripRepository } from './trip.repository';
 import * as IUser from '../interfaces';
 import { CreateTripDto } from './dto';
@@ -7,14 +8,16 @@ import { Location } from '../locations/relations';
 import { User } from '../users/user.entity';
 import { UserRepository } from '../users/user.repository';
 import { TripHandlerFactory } from '../handlers';
+import { RoutePlanProvider } from '../providers/route-plan.provider';
 import * as ETrip from '../enums';
 import * as ITrip from '../interfaces';
+import { MultiLineString } from 'geojson';
 
 @Injectable()
 export class TripService {
   private readonly logger: Logger = new Logger('');
 
-  constructor(private readonly tripRepository: TripRepository, private readonly userRepository: UserRepository, private readonly locationRepository: LocationRepository) {}
+  constructor(private readonly tripRepository: TripRepository, private readonly userRepository: UserRepository, private readonly locationRepository: LocationRepository, private readonly routePlanProvider: RoutePlanProvider) {}
 
   public async getRequest(): Promise<string> {
     return 'Hello World!';
@@ -23,11 +26,12 @@ export class TripService {
   /**
    * @description Create Trip Service layer and handling async event publish
    * @public
+   * @param {Request} req
    * @param {IUser.UserInfo | IUser.JwtPayload} user
    * @param {CreateTripDto} createTripDto
    * @returns {Promise<ITrip.ResponseBase>}
    */
-  public async createTrip(user: IUser.UserInfo | IUser.JwtPayload, createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
+  public async createTrip(req: Request, user: IUser.UserInfo | IUser.JwtPayload, createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
     const { startDate, endDate, publisherId, startPointName, endPointName, publicStatus, companyName, shipNumber } = createTripDto;
 
     // check user information if it's pass user is valid
@@ -73,6 +77,15 @@ export class TripService {
       );
     // fi
 
+    const routePlan: MultiLineString = await this.routePlanProvider.getRoutePlanning(
+      {
+        startLocationName: locations[0].locationName,
+        endLocationName: locations[1].locationName,
+        type: ETrip.EPlanType.TEXT,
+      },
+      req.headers.authorization,
+    );
+
     const tripData: ITrip.ICreateTrip = {
       startDate,
       endDate,
@@ -82,6 +95,7 @@ export class TripService {
       publicStatus,
       companyName,
       shipNumber,
+      geom: routePlan || null,
     };
 
     try {
@@ -95,7 +109,7 @@ export class TripService {
         message: trip,
       };
     } catch (error) {
-      this.logger.log(error.message, 'SignIn');
+      this.logger.log(error.message, 'CreateTripError');
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
