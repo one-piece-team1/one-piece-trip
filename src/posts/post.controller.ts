@@ -1,4 +1,4 @@
-import { Controller, Get, SetMetadata, UseGuards, Post, UseInterceptors, Request, Body, ValidationPipe, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, SetMetadata, UseGuards, Post, UseInterceptors, Request, Body, ValidationPipe, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'guards/local-guard';
 import { CurrentUser } from '../strategy';
@@ -12,18 +12,11 @@ import { EUserRole } from '../enums';
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @Get('/usertest')
-  @SetMetadata('roles', [Euser.EUserRole.USER])
-  @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  getRequestTest(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload) {
-    return this.postService.getRequestTest();
-  }
-
-  @Post('/')
+  @Get('/')
   @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
   @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  createPost(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createPostDto: CreatePostDto) {
-    return this.postService.createPost(user, createPostDto);
+  getPosts(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Query(ValidationPipe) searchDto: ITrip.ISearch) {
+    return this.postService.getPosts(user, searchDto);
   }
 
   @Get('/:postId')
@@ -31,5 +24,12 @@ export class PostController {
   @UseGuards(AuthGuard(['jwt']), RoleGuard)
   getPostById(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Param('postId', ParseUUIDPipe) postId: string) {
     return this.postService.getPostById(user, postId);
+  }
+
+  @Post('/')
+  @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
+  @UseGuards(AuthGuard(['jwt']), RoleGuard)
+  createPost(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createPostDto: CreatePostDto) {
+    return this.postService.createPost(user, createPostDto);
   }
 }
