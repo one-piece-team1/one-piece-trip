@@ -10,7 +10,16 @@ export class RoutePlanProvider {
   private readonly routePlanUrl: string = `${config.MS_SETTINGS.ONE_PIECE_LOCATION.protocol}://${config.MS_SETTINGS.ONE_PIECE_LOCATION.host}:${config.MS_SETTINGS.ONE_PIECE_LOCATION.port}`;
   private readonly logger: Logger = new Logger('RoutePlanProvider');
 
-  async getRoutePlanning(searchForPlanStartandEndPointDto: SearchForPlanStartandEndPointDto, serviceToken: string): Promise<MultiLineString> {
+  /**
+   * @description Get route planning with provided start and end locaiton name
+   * - Route plan has two return type, with type 'text' it returns the collections of the plans finded by DIJKSTRA
+   * - with type 'LINE' it returns a Spatil System Srid 4326 Hash string to represent the planning
+   * @public
+   * @param searchForPlanStartandEndPointDto
+   * @param serviceToken
+   * @returns {Promise<MultiLineString>}
+   */
+  public async getRoutePlanning(searchForPlanStartandEndPointDto: SearchForPlanStartandEndPointDto, serviceToken: string): Promise<MultiLineString> {
     console.log('searchForPlanStartandEndPointDto: ', searchForPlanStartandEndPointDto);
     try {
       const routePlan = (await APIRequestFactory.createRequest('standard').makeRequest({
