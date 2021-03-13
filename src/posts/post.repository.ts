@@ -61,36 +61,32 @@ export class PostRepository extends Repository<Post> {
    * @public
    * @param {ITrip.ISearch} searchDto
    * @param {boolean} isAdmin
-   * @returns {Promise<ITrip.ResponseBase>}
+   * @returns {Promise<{ posts: Post[]; take: number; skip: number; count: number }>}
    */
   // eslint-disable-next-line
-  public async getPosts(searchDto: ITrip.ISearch, isAdmin: boolean) {
+  public async getPosts(searchDto: ITrip.ISearch, isAdmin: boolean): Promise<{ posts: Post[]; take: number; skip: number; count: number }> {
     const take = searchDto.take ? Number(searchDto.take) : 10;
     const skip = searchDto.skip ? Number(searchDto.skip) : 0;
     // eslint-disable-next-line
     const searchOpts: ITrip.IQueryPaging = {
       take,
       skip,
+      relations: ['publisher', 'trip'],
       order: {
         updatedAt: searchDto.sort,
       },
     };
 
     try {
-      const [posts, count] = await this.repoManager.findAndCount(Post, {
-        take,
-        skip,
-        relations: ['publisher', 'trip'],
-        order: {
-          updatedAt: searchDto.sort,
-        },
-      });
+      const [posts, count] = await this.repoManager.findAndCount(Post, searchOpts);
       posts.forEach((post) => {
         delete post.publisher.password;
         delete post.publisher.salt;
       });
       return {
         posts,
+        take,
+        skip,
         count,
       };
     } catch (error) {
