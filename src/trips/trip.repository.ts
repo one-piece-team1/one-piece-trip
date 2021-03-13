@@ -79,7 +79,7 @@ export class TripRepository extends Repository<Trip> {
    * @param {boolean} isSelfQuerying
    * @returns {Promise<{ trips: Trip[]; count: number }>}
    */
-  public async getTripByPaging(getTripByPagingDto: GetTripByPagingDto, isSelfQuerying: boolean): Promise<{ trips: Trip[]; count: number }> {
+  public async getTripByPaging(getTripByPagingDto: GetTripByPagingDto, isSelfQuerying: boolean): Promise<{ trips: Trip[]; take: number; skip: number; count: number }> {
     const take = getTripByPagingDto.take ? Number(getTripByPagingDto.take) : 10;
     const skip = getTripByPagingDto.skip ? Number(getTripByPagingDto.skip) : 0;
 
@@ -107,6 +107,8 @@ export class TripRepository extends Repository<Trip> {
       const [trips, count] = await this.repoManager.findAndCount(Trip, searchOpts);
       return {
         trips,
+        take,
+        skip,
         count,
       };
     } catch (error) {

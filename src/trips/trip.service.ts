@@ -181,7 +181,7 @@ export class TripService {
     const isSelfQuery: boolean = user.id === getTripByPagingDto.publisherId;
 
     try {
-      const { trips, count } = await this.tripRepository.getTripByPaging(getTripByPagingDto, isSelfQuery);
+      const { trips, count, take, skip } = await this.tripRepository.getTripByPaging(getTripByPagingDto, isSelfQuery);
       if (!trips || !count)
         throw new HttpException(
           {
@@ -196,6 +196,8 @@ export class TripService {
         status: 'success',
         message: {
           trips,
+          take,
+          skip,
           count,
         },
       };

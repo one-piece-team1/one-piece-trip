@@ -7,6 +7,7 @@ import * as ELocation from '../enums';
 import * as CountriesData from '../../datasets/countries/country.json';
 import { Location, Country } from '../locations/relations';
 import { Trip } from '../trips/trip.entity';
+import { Post } from '../posts/post.entity';
 import { User } from '../users/user.entity';
 
 interface ICountry {
@@ -87,7 +88,7 @@ class DBFHandler {
       username: config.DB_SETTINGS.username,
       password: config.DB_SETTINGS.password,
       database: config.DB_SETTINGS.database,
-      entities: [Location, Country, Trip, User],
+      entities: [Location, Country, Trip, Post, User],
       synchronize: true,
     }).catch((err) => this.logger.log(err.message, 'Init'));
     this.generatePointsData();

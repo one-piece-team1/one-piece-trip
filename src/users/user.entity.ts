@@ -25,7 +25,7 @@ export class User extends BaseEntity {
   /**
    * @description Currently no use
    */
-  @Column({ type: 'timestamp', nullable: false })
+  @Column({ type: 'timestamp', nullable: true })
   expiredDate: Date;
 
   /**

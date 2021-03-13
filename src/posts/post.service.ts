@@ -136,7 +136,7 @@ export class PostService {
     if (!searchDto.sort) searchDto.sort = 'DESC';
     const isAdmin = user.role === ETrip.EUserRole.ADMIN;
     try {
-      const { posts, count } = await this.postRepository.getPosts(searchDto, isAdmin);
+      const { posts, count, take, skip } = await this.postRepository.getPosts(searchDto, isAdmin);
       if (!posts || !count) {
         throw new HttpException(
           {
@@ -151,6 +151,8 @@ export class PostService {
         status: 'success',
         message: {
           posts,
+          take,
+          skip,
           count,
         },
       };
