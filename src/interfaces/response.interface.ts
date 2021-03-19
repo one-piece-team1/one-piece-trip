@@ -25,3 +25,7 @@ export interface IPagingResponse {
 export interface IPostPagingResponseBase<T> extends IPagingResponse {
   posts: T;
 }
+
+export interface ITripPagingResponseBase<T> extends IPagingResponse {
+  trips: T;
+}
