@@ -47,7 +47,7 @@ export class TripRepository extends Repository<Trip> {
     query.leftJoinAndSelect('trip.publisher', 'publisher');
     query.andWhere('trip.id = :id', { id });
     try {
-      return query.getOne();
+      return await query.getOne();
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -64,7 +64,9 @@ export class TripRepository extends Repository<Trip> {
     query.leftJoinAndSelect('trip.posts', 'posts');
     query.andWhere('trip.id = :id', { id: getTripByIdDto.id });
     try {
-      return query.getOne();
+      const trip = await query.getOne();
+      if (!trip) return null;
+      return trip;
     } catch (error) {
       this.logger.log(error.message, 'GetTripByIdError');
       throw new InternalServerErrorException(error.message);

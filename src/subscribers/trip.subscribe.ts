@@ -1,10 +1,10 @@
 import * as amqp from 'amqplib/callback_api';
 import { Injectable, Logger } from '@nestjs/common';
-import { UserRepository } from '../users/user.repository';
-import { config } from '../../config';
-import * as Event from '../events';
 import { User } from '../users/user.entity';
+import { UserRepository } from '../users/user.repository';
+import * as Event from '../events';
 import { UpdatePasswordEventDto, DeleteUserEventDto, UpdateUserAdditionalInfoPublishDto } from '../users/dto';
+import { config } from '../../config';
 
 interface IReceiveEvent {
   type: Event.UserEvent;

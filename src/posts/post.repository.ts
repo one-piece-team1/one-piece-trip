@@ -78,11 +78,8 @@ export class PostRepository extends Repository<Post> {
     };
 
     try {
-      const [posts, count] = await this.repoManager.findAndCount(Post, searchOpts);
-      posts.forEach((post) => {
-        delete post.publisher.password;
-        delete post.publisher.salt;
-      });
+      const [posts, count] = await this.findAndCount(searchOpts);
+      if (posts.length === 0) return null;
       return {
         posts,
         take,

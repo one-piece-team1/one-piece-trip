@@ -1,9 +1,9 @@
 import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Location } from '../locations/relations';
-import { User } from '../users/user.entity';
-import * as ETrip from '../enums';
-import { Post } from 'posts/post.entity';
 import { MultiLineString } from 'geojson';
+import { User } from '../users/user.entity';
+import { Post } from 'posts/post.entity';
+import { Location } from '../locations/relations';
+import * as ETrip from '../enums';
 
 @Entity()
 export class Trip extends BaseEntity {

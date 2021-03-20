@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TripRepository } from 'trips/trip.repository';
-import { UserRepository } from 'users/user.repository';
-import { PostController } from './post.controller';
-import { PostRepository } from './post.repository';
-import { PostService } from './post.service';
 import { JwtStrategy } from '../strategy';
-import { config } from '../../config';
-import { PostEventSubscribers } from 'subscribers';
+import { PostController } from './post.controller';
+import { PostService } from './post.service';
+import { UserRepository } from 'users/user.repository';
+import { TripRepository } from 'trips/trip.repository';
+import { PostRepository } from './post.repository';
+import { PostEventSubscribers } from '../subscribers';
 import { Uploader } from '../libs/cloudinary';
+import { config } from '../../config';
 
 @Module({
   imports: [

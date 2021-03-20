@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { MultiLineString, Position } from 'geojson';
 import { APIRequestFactory } from '../libs/request-factory';
 import { SearchForPlanStartandEndPointDto } from './dtos';
-import { config } from '../../config';
 import * as ITrip from '../interfaces';
-import { MultiLineString, Position } from 'geojson';
+import { config } from '../../config';
 
 @Injectable()
 export class RoutePlanProvider {

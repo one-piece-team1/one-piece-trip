@@ -2,15 +2,15 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LocationRepository } from 'locations/location.repository';
-import { UserRepository } from '../users/user.repository';
 import { JwtStrategy } from '../strategy';
 import { TripController } from './trip.controller';
-import { TripRepository } from './trip.repository';
 import { TripService } from './trip.service';
+import { UserRepository } from '../users/user.repository';
+import { TripRepository } from './trip.repository';
+import { LocationRepository } from 'locations/location.repository';
 import { TripEventSubscribers } from '../subscribers';
-import { config } from '../../config';
 import { RoutePlanProvider } from '../providers/route-plan.provider';
+import { config } from '../../config';
 
 @Module({
   imports: [
