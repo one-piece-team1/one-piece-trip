@@ -47,7 +47,7 @@ export class TripRepository extends Repository<Trip> {
     query.leftJoinAndSelect('trip.publisher', 'publisher');
     query.andWhere('trip.id = :id', { id });
     try {
-      return query.getOne();
+      return await query.getOne();
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -64,7 +64,9 @@ export class TripRepository extends Repository<Trip> {
     query.leftJoinAndSelect('trip.posts', 'posts');
     query.andWhere('trip.id = :id', { id: getTripByIdDto.id });
     try {
-      return query.getOne();
+      const trip = await query.getOne();
+      if (!trip) return null;
+      return trip;
     } catch (error) {
       this.logger.log(error.message, 'GetTripByIdError');
       throw new InternalServerErrorException(error.message);
@@ -79,7 +81,7 @@ export class TripRepository extends Repository<Trip> {
    * @param {boolean} isSelfQuerying
    * @returns {Promise<{ trips: Trip[]; count: number }>}
    */
-  public async getTripByPaging(getTripByPagingDto: GetTripByPagingDto, isSelfQuerying: boolean): Promise<{ trips: Trip[]; count: number }> {
+  public async getTripByPaging(getTripByPagingDto: GetTripByPagingDto, isSelfQuerying: boolean): Promise<{ trips: Trip[]; take: number; skip: number; count: number }> {
     const take = getTripByPagingDto.take ? Number(getTripByPagingDto.take) : 10;
     const skip = getTripByPagingDto.skip ? Number(getTripByPagingDto.skip) : 0;
 
@@ -107,6 +109,8 @@ export class TripRepository extends Repository<Trip> {
       const [trips, count] = await this.repoManager.findAndCount(Trip, searchOpts);
       return {
         trips,
+        take,
+        skip,
         count,
       };
     } catch (error) {

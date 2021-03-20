@@ -1,12 +1,12 @@
+import { Request } from 'express';
 import { Body, Controller, Get, Logger, Param, Post, Query, Req, SetMetadata, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { RoleGuard } from '../guards/local-guard';
 import { CurrentUser } from '../strategy';
 import { TripService } from './trip.service';
+import { CreateTripDto, GetTripByIdDto, GetTripByPagingDto } from './dto';
 import * as ITrip from '../interfaces';
 import * as Euser from '../enums';
-import { RoleGuard } from '../guards/local-guard';
-import { CreateTripDto, GetTripByIdDto, GetTripByPagingDto } from './dto';
 
 @Controller('trips')
 export class TripController {
@@ -32,14 +32,14 @@ export class TripController {
   @Get('/:id/publishers/:publisherId')
   @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
   @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  getTripById(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Param(ValidationPipe) getTripByIdDto: GetTripByIdDto): Promise<ITrip.ResponseBase> {
+  getTripById(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Param(ValidationPipe) getTripByIdDto: GetTripByIdDto) {
     return this.tripService.getTripById(user, getTripByIdDto);
   }
 
   @Post('/')
   @SetMetadata('roles', [Euser.EUserRole.USER, Euser.EUserRole.VIP1, Euser.EUserRole.VIP2, Euser.EUserRole.ADMIN])
   @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  createTrip(@Req() req: Request, @CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createTripDto: CreateTripDto): Promise<ITrip.ResponseBase> {
+  createTrip(@Req() req: Request, @CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload, @Body(ValidationPipe) createTripDto: CreateTripDto) {
     return this.tripService.createTrip(req, user, createTripDto);
   }
 }
