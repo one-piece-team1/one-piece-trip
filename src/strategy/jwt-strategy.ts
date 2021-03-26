@@ -10,7 +10,7 @@ import { config } from '../../config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  private redisClient = new Redis(config.REDIS_URL);
+  private redisClient = new Redis(config.REDIS_BLACKLIST_URL);
 
   constructor(
     @Inject(UserRepository)
