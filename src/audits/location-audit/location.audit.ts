@@ -5,7 +5,7 @@ import { LocationAuditLog } from './location-audit.entity';
 import * as EAudit from '../enums';
 
 @EventSubscriber()
-export class UserAuditSubscriber implements EntitySubscriberInterface<Location> {
+export class LocationAuditSubscriber implements EntitySubscriberInterface<Location> {
   /**
    * @description Listen to location entity changing
    * @public
