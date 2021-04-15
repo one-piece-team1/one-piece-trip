@@ -24,6 +24,8 @@ export class Country extends BaseEntity {
     this.updatedAt = new Date();
   }
 
+  // country currently don't need this hook
+  /* istanbul ignore next */
   @BeforeUpdate()
   updateDateWhenUpdate() {
     this.updatedAt = new Date();

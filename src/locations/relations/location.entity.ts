@@ -87,6 +87,8 @@ export class Location extends BaseEntity {
     this.updatedAt = new Date();
   }
 
+  // location currently don't need this hook, update in turn services in future
+  /* istanbul ignore next */
   @BeforeUpdate()
   updateDateWhenUpdate() {
     this.updatedAt = new Date();

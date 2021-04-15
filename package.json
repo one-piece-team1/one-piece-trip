@@ -128,7 +128,8 @@
       "src/audits",
       "src/libs",
       "src/subscribers",
-      "src/publishers"
+      "src/publishers",
+      "src/handlers"
     ],
     "moduleFileExtensions": [
       "js",
