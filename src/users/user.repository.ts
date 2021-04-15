@@ -8,7 +8,7 @@ import { config } from '../../config';
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   private readonly logger = new Logger('UserRepository');
-  private readonly connectionName: string = config.ENV === "test" ? "testConnection" : "default";
+  private readonly connectionName: string = config.ENV === 'test' ? 'testConnection' : 'default';
 
   /**
    * @description async createUser Event
