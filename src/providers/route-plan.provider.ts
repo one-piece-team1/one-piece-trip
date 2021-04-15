@@ -20,7 +20,6 @@ export class RoutePlanProvider {
    * @returns {Promise<MultiLineString>}
    */
   public async getRoutePlanning(searchForPlanStartandEndPointDto: SearchForPlanStartandEndPointDto, serviceToken: string): Promise<MultiLineString> {
-    console.log('searchForPlanStartandEndPointDto: ', searchForPlanStartandEndPointDto);
     try {
       const routePlan = (await APIRequestFactory.createRequest('standard').makeRequest({
         method: 'GET',
@@ -39,12 +38,12 @@ export class RoutePlanProvider {
         };
       return this.convertToMultiLineString(routePlan.message as ITrip.INetworkGeometryResponse[]);
     } catch (error) {
-      this.logger.log(error.message, 'GetRoutePlanningError');
+      this.logger.error(error.message, '', 'GetRoutePlanningError');
       throw new InternalServerErrorException(error.message);
     }
   }
 
-  convertToMultiLineString(plans: ITrip.INetworkGeometryResponse[]): MultiLineString {
+  public convertToMultiLineString(plans: ITrip.INetworkGeometryResponse[]): MultiLineString {
     const coordinates: Position[][] = [];
     plans.forEach((plan: ITrip.INetworkGeometryResponse) => coordinates.push(plan.lineString.coordinates));
     return {

@@ -4,7 +4,7 @@ export interface INetworkGeometryMakeLine {
   geom?: string;
 }
 export interface INetworkGeometryAsText {
-  id?: string;
+  id?: number;
   name?: string;
   geom?: string;
   srid?: string;
@@ -20,6 +20,8 @@ export interface INetworkGeometryAsText {
   cost?: number;
   agg_cost?: number;
   route_length?: number;
+  version?: number;
+  route_legnth?: number;
 }
 
 export interface INetworkGeometryResponse extends INetworkGeometryAsText, INetworkGeometryMakeLine {
