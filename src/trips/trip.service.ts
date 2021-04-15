@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MultiLineString } from 'geojson';
 import { User } from '../users/user.entity';
 import { Trip } from './trip.entity';
-import { LocationRepository } from 'locations/location.repository';
+import { LocationRepository } from '../locations/location.repository';
 import { Location } from '../locations/relations';
 import { UserRepository } from '../users/user.repository';
 import { TripRepository } from './trip.repository';
@@ -30,8 +30,13 @@ export class TripService {
     private readonly routePlanProvider: RoutePlanProvider,
   ) {}
 
-  public async getRequest(): Promise<string> {
-    return 'Hello World!';
+  /**
+   * @description health check use
+   * @public
+   * @returns {string}
+   */
+  public getRequest(): string {
+    return 'Server is healthly';
   }
 
   /**

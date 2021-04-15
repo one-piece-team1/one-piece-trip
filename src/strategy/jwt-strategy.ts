@@ -10,7 +10,7 @@ import { config } from '../../config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  private redisClient = new Redis(config.REDIS_BLACKLIST_URL);
+  public readonly redisClient = new Redis(config.REDIS_BLACKLIST_URL);
 
   constructor(
     @Inject(UserRepository)
@@ -32,15 +32,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    */
   async validate(req: Request, payload: JwtPayload): Promise<User | JwtPayload> {
     // check token expired time
-    const jwtExp = payload.exp * 1000;
-    if (Date.now() >= jwtExp) throw new UnauthorizedException('Token is expired');
+    if (Date.now() >= payload.exp * 1000) throw new UnauthorizedException('Token is expired');
 
     const { username } = payload;
 
     // check blacklists
     const blacklists: string[] = await this.redisClient.lrange('blacklist', 0, 99999999);
     if (blacklists.indexOf(req.headers.authorization) >= 0) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token is invalid');
     }
 
     const user = await this.userRepository.findOne({
@@ -50,7 +49,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-
+    user['licence'] = payload.licence;
     return user;
   }
 }

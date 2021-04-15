@@ -10,15 +10,10 @@ import * as Euser from '../enums';
 
 @Controller('trips')
 export class TripController {
-  private readonly logger: Logger = new Logger('TripController');
-
   constructor(private readonly tripService: TripService) {}
 
-  @Get('/usertest')
-  @SetMetadata('roles', [Euser.EUserRole.ADMIN])
-  @UseGuards(AuthGuard(['jwt']), RoleGuard)
-  getRequest(@CurrentUser() user: ITrip.UserInfo | ITrip.JwtPayload): Promise<string> {
-    this.logger.log(JSON.stringify(user), 'AdminTest');
+  @Get('/')
+  getRequest(): string {
     return this.tripService.getRequest();
   }
 
