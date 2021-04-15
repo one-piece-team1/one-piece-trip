@@ -1,23 +1,30 @@
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { Repository, EntityRepository, getManager, EntityManager, Not } from 'typeorm';
+import { Repository, EntityRepository, getManager, EntityManager, Not, getRepository } from 'typeorm';
 import { User } from './user.entity';
 import * as IUser from '../interfaces';
 import { DeleteUserEventDto, UpdatePasswordEventDto, UpdateUserAdditionalInfoPublishDto } from './dto';
+import { config } from '../../config';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  private readonly repoManager: EntityManager = getManager();
   private readonly logger = new Logger('UserRepository');
+  private readonly connectionName: string = config.ENV === "test" ? "testConnection" : "default";
 
   /**
    * @description async createUser Event
    * @event
    * @public
    * @param {User} userReq
-   * @returns {void}
+   * @returns {Promise<User>}
    */
-  public createUser(userReq: User): void {
-    this.repoManager.save(User, userReq).catch((err) => this.logger.log(err.message, 'CreatUser'));
+  public async createUser(userReq: User): Promise<User> {
+    try {
+      const user = new User();
+      Object.assign(user, userReq);
+      return await user.save();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   /**
@@ -39,7 +46,7 @@ export class UserRepository extends Repository<User> {
       // trial, user, vip can view each others data except admin data
       if (!isAdmin) findOpts.where.role = Not('admin');
 
-      const user: User = await this.findOne(findOpts);
+      const user: User = await getRepository(User, this.connectionName).findOne(findOpts);
       if (!user) throw new NotFoundException();
       delete user.password;
       delete user.salt;
@@ -55,14 +62,18 @@ export class UserRepository extends Repository<User> {
    * @event
    * @public
    * @param {UpdatePasswordEventDto} updatePasswordEventDto
-   * @returns {void}
+   * @returns {Promise<User>}
    */
-  public updateUserPassword(updatePasswordEventDto: UpdatePasswordEventDto): void {
+  public async updateUserPassword(updatePasswordEventDto: UpdatePasswordEventDto): Promise<User> {
     const { id, salt, password } = updatePasswordEventDto;
-    this.repoManager
-      .getRepository(User)
-      .update(id, { salt, password })
-      .catch((err) => this.logger.log(err.message, 'UpdateUserPassword'));
+    try {
+      const user = await getRepository(User, this.connectionName).findOne({ id });
+      user.salt = salt;
+      user.password = password;
+      return await user.save();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   /**
@@ -70,14 +81,20 @@ export class UserRepository extends Repository<User> {
    * @event
    * @public
    * @param {UpdateUserAdditionalInfoPublishDto} updateUserAdditionalInfoPublishDto
-   * @returns {void}
+   * @returns {Promise<User>}
    */
-  public updateUserAdditionalInfo(updateUserAdditionalInfoPublishDto: UpdateUserAdditionalInfoPublishDto) {
+  public async updateUserAdditionalInfo(updateUserAdditionalInfoPublishDto: UpdateUserAdditionalInfoPublishDto): Promise<User> {
     const { id, gender, age, desc, profileImage } = updateUserAdditionalInfoPublishDto;
-    this.repoManager
-      .getRepository(User)
-      .update(id, { gender, age, desc, profileImage })
-      .catch((err) => this.logger.log(err.message, 'UpdateUserAdditionalInfo'));
+    try {
+      const user = await getRepository(User, this.connectionName).findOne({ id });
+      if (gender) user.gender = gender;
+      if (age) user.age = age;
+      if (desc) user.desc = desc;
+      if (profileImage) user.profileImage = profileImage;
+      return await user.save();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
   /**
@@ -85,13 +102,16 @@ export class UserRepository extends Repository<User> {
    * @event
    * @public
    * @param {DeleteUserEventDto} deleteUserEventDto
-   * @returns {void}
+   * @returns {Promise<User>}
    */
-  public softDeleteUser(deleteUserEventDto: DeleteUserEventDto): void {
+  public async softDeleteUser(deleteUserEventDto: DeleteUserEventDto): Promise<User> {
     const { id } = deleteUserEventDto;
-    this.repoManager
-      .getRepository(User)
-      .update(id, { status: false })
-      .catch((err) => this.logger.log(err.message, 'SoftDeleteUser'));
+    try {
+      const user = await getRepository(User, this.connectionName).findOne({ id });
+      user.status = false;
+      return await user.save();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
