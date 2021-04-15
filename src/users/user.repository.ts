@@ -1,5 +1,5 @@
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { Repository, EntityRepository, getManager, EntityManager, Not, getRepository } from 'typeorm';
+import { Repository, EntityRepository, Not, getRepository } from 'typeorm';
 import { User } from './user.entity';
 import * as IUser from '../interfaces';
 import { DeleteUserEventDto, UpdatePasswordEventDto, UpdateUserAdditionalInfoPublishDto } from './dto';
@@ -23,6 +23,7 @@ export class UserRepository extends Repository<User> {
       Object.assign(user, userReq);
       return await user.save();
     } catch (error) {
+      this.logger.error(error.message, '', 'CreateUserError');
       throw new Error(error.message);
     }
   }
@@ -52,7 +53,7 @@ export class UserRepository extends Repository<User> {
       delete user.salt;
       return user;
     } catch (error) {
-      this.logger.log(error.message, 'GetUserById');
+      this.logger.error(error.message, '', 'GetUserByIdError');
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -72,6 +73,7 @@ export class UserRepository extends Repository<User> {
       user.password = password;
       return await user.save();
     } catch (error) {
+      this.logger.error(error.message, '', 'UpdateUserPasswordError');
       throw new Error(error.message);
     }
   }
@@ -93,6 +95,7 @@ export class UserRepository extends Repository<User> {
       if (profileImage) user.profileImage = profileImage;
       return await user.save();
     } catch (error) {
+      this.logger.error(error.message, '', 'UpdateUserAdditionalInfoError');
       throw new Error(error.message);
     }
   }
@@ -111,6 +114,7 @@ export class UserRepository extends Repository<User> {
       user.status = false;
       return await user.save();
     } catch (error) {
+      this.logger.error(error.message, '', 'SoftDeleteUserError');
       throw new Error(error.message);
     }
   }
