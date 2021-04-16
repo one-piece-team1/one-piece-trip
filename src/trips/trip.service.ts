@@ -79,16 +79,6 @@ export class TripService {
     const promises = [this.locationRepository.findLocationByLocationName(startPointName), this.locationRepository.findLocationByLocationName(endPointName)];
 
     const locations = await Promise.all(promises);
-    if (!(locations instanceof Array)) {
-      this.logger.error('Location not found', '', 'CreateTripError');
-      return new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Location not found',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     if (!(locations[0] instanceof Location) || !(locations[1] instanceof Location)) {
       this.logger.error('Location not found', '', 'CreateTripError');
       return new HttpException(

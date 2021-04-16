@@ -33,7 +33,7 @@ describe('# Trip Repository', () => {
     Post.useConnection(connection);
     Location.useConnection(connection);
     Country.useConnection(connection);
-    tripRepository = await module.get(getCustomRepositoryToken(TripRepository));
+    tripRepository = module.get(getCustomRepositoryToken(TripRepository));
   });
 
   afterAll(async () => {
