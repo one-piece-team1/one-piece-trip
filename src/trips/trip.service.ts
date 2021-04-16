@@ -61,8 +61,11 @@ export class TripService {
         HttpStatus.FORBIDDEN,
       );
     }
+
+    console.log('publisher', user.id);
     const isAdmin: boolean = user.role === ETrip.EUserRole.ADMIN;
     const publisher: User = await this.userRepository.getUserById(user.id, isAdmin);
+
     if (!publisher) {
       this.logger.error('User not found', '', 'CreateTripError');
       return new HttpException(
