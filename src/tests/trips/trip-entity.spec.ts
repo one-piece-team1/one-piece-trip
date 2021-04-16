@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, createConnection, getRepository, Connection } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../users/user.entity';
 import { Trip } from '../../trips/trip.entity';
@@ -9,7 +8,6 @@ import { Post } from '../../posts/post.entity';
 import { Location, Country } from '../../locations/relations';
 import { MockCreateCountry, MockCreateLocation, MockCreateUser, MockCreateTrip } from '../../libs/mock_data';
 import { testOrmconfig } from '../../config/orm.config';
-import * as EShare from '../../enums';
 
 describe('# Trip Entity', () => {
   let connection: Connection;

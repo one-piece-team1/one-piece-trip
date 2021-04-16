@@ -1,12 +1,13 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { EntityManager, EntityRepository, getManager, Not, Equal, Repository } from 'typeorm';
+import { EntityRepository, Not, Equal, Repository, getRepository } from 'typeorm';
 import { Trip } from './trip.entity';
 import * as ITrip from '../interfaces';
 import { GetTripByIdDto, GetTripByPagingDto } from './dto';
+import { config } from '../../config';
 
 @EntityRepository(Trip)
 export class TripRepository extends Repository<Trip> {
-  private readonly repoManager: EntityManager = getManager();
+  private readonly connectionName: string = config.ENV === 'test' ? 'testConnection' : 'default';
   private readonly logger: Logger = new Logger('TripRepository');
 
   /**
@@ -30,7 +31,7 @@ export class TripRepository extends Repository<Trip> {
     try {
       await trip.save();
     } catch (error) {
-      this.logger.log(error.message, 'CreateTripError');
+      this.logger.error(error.message, '', 'CreateTripError');
       throw new InternalServerErrorException(error);
     }
     return trip;
@@ -43,12 +44,13 @@ export class TripRepository extends Repository<Trip> {
    * @returns {Promise<Trip>}
    */
   public async verifyByTripById(id: string): Promise<Trip> {
-    const query = this.createQueryBuilder('trip');
+    const query = getRepository(Trip, this.connectionName).createQueryBuilder('trip');
     query.leftJoinAndSelect('trip.publisher', 'publisher');
     query.andWhere('trip.id = :id', { id });
     try {
       return await query.getOne();
     } catch (error) {
+      this.logger.error(error.message, '', 'VerifyByTripByIdError');
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -60,15 +62,13 @@ export class TripRepository extends Repository<Trip> {
    * @returns {Promise<Trip>}
    */
   public async getTripById(getTripByIdDto: GetTripByIdDto): Promise<Trip> {
-    const query = this.createQueryBuilder('trip');
+    const query = getRepository(Trip, this.connectionName).createQueryBuilder('trip');
     query.leftJoinAndSelect('trip.posts', 'posts');
     query.andWhere('trip.id = :id', { id: getTripByIdDto.id });
     try {
-      const trip = await query.getOne();
-      if (!trip) return null;
-      return trip;
+      return await query.getOne();
     } catch (error) {
-      this.logger.log(error.message, 'GetTripByIdError');
+      this.logger.error(error.message, '', 'GetTripByIdError');
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -106,7 +106,7 @@ export class TripRepository extends Repository<Trip> {
     // }
 
     try {
-      const [trips, count] = await this.repoManager.findAndCount(Trip, searchOpts);
+      const [trips, count] = await getRepository(Trip, this.connectionName).findAndCount(searchOpts);
       return {
         trips,
         take,
@@ -114,7 +114,7 @@ export class TripRepository extends Repository<Trip> {
         count,
       };
     } catch (error) {
-      this.logger.log(error.message, 'GetTripByPaging');
+      this.logger.error(error.message, '', 'GetTripByPagingError');
       throw new InternalServerErrorException(error.message);
     }
   }
