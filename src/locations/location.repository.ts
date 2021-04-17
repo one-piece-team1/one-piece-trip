@@ -1,9 +1,11 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, getRepository, Repository } from 'typeorm';
 import { Location } from './relations';
+import { config } from '../../config';
 
 @EntityRepository(Location)
 export class LocationRepository extends Repository<Location> {
+  private readonly connectionName: string = config.ENV === 'test' ? 'testConnection' : 'default';
   private readonly logger: Logger = new Logger('LocationRepository');
 
   /**
@@ -16,11 +18,11 @@ export class LocationRepository extends Repository<Location> {
    */
   public async findLocationByLocationName(locationName: string): Promise<Location> {
     try {
-      const location = await this.findOne({ where: { locationName } });
+      const location = await getRepository(Location, this.connectionName).findOne({ where: { locationName } });
       if (!location) throw new NotFoundException();
       return location;
     } catch (error) {
-      this.logger.log(error.message, 'FindLocationById');
+      this.logger.error(error.message, '', 'FindLocationByLocationNameErrpr');
       throw new Error(error.message);
     }
   }
