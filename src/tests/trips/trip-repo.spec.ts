@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getCustomRepositoryToken } from '@nestjs/typeorm';
-import { Connection, createConnection, getManager, getRepository, Repository } from 'typeorm';
+import { Connection, createConnection, getManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { TripRepository } from '../../trips/trip.repository';
