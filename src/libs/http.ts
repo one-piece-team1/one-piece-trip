@@ -1,4 +1,4 @@
-import * as httpRequest from 'request-promise';
+import httpRequest from 'request-promise';
 
 export class StandardRequest {
   /**
@@ -7,10 +7,16 @@ export class StandardRequest {
    */
   makeRequest(options: any) {
     return new Promise((resolve, reject) => {
-      httpRequest
-        .default(options)
-        .then((res) => resolve(res))
-        .catch((err) => reject(err));
+      if (options.method === 'GET' || options.method === 'get') {
+        httpRequest
+          .get(options.url, {
+            headers: options.headers,
+            timeout: options.timeout,
+            json: true,
+          })
+          .then((res) => resolve(res))
+          .catch((err) => reject(err));
+      }
     });
   }
 }

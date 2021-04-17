@@ -1,6 +1,7 @@
 # README
 
 [![one-piece-trip](https://circleci.com/gh/one-piece-team1/one-piece-trip.svg?style=svg)](https://circleci.com/gh/one-piece-team1/one-piece-trip.svg?style=svg)
+[![codecov](https://codecov.io/gh/one-piece-team1/one-piece-trip/branch/master/graph/badge.svg?token=WGOXX4N74B)](https://codecov.io/gh/one-piece-team1/one-piece-trip)
 ## LICENCE
 
 Copyright [2020]["11","ivonne", "mina", "evena"]

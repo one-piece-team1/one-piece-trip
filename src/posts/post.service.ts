@@ -1,5 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
+import { Trip } from '../trips/trip.entity';
 import { Post } from './post.entity';
 import { UserRepository } from '../users/user.repository';
 import { PostRepository } from './post.repository';
@@ -16,11 +18,15 @@ export class PostService {
   private readonly hTTPResponse: HTTPResponse = new HTTPResponse();
   private readonly logger: Logger = new Logger('PostService');
 
-  constructor(private readonly postRepository: PostRepository, private readonly tripRepository: TripRepository, private readonly userRepository: UserRepository, private readonly uploader: Uploader) {}
-
-  getRequestTest(): string {
-    return 'Hello World!';
-  }
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: PostRepository,
+    @InjectRepository(Trip)
+    private readonly tripRepository: TripRepository,
+    @InjectRepository(User)
+    private readonly userRepository: UserRepository,
+    private readonly uploader: Uploader,
+  ) {}
 
   /**
    * @description Create post includes user authentication and trip verification
@@ -149,7 +155,7 @@ export class PostService {
     const isAdmin = user.role === ETrip.EUserRole.ADMIN;
     try {
       const { posts, count, take, skip } = await this.postRepository.getPosts(searchDto, isAdmin);
-      if (!posts || !count) {
+      if (!posts || !count || posts.length === 0) {
         this.logger.error('Post Not Found', '', 'GetPostsError');
         return new HttpException(
           {

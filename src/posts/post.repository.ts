@@ -1,14 +1,15 @@
 import { InternalServerErrorException, Logger } from '@nestjs/common';
-import { EntityManager, EntityRepository, getManager, Repository } from 'typeorm';
+import { EntityManager, EntityRepository, getManager, getRepository, Repository } from 'typeorm';
 import { CreatePostDto } from './dto';
 import { Post } from './post.entity';
 import { Trip } from '../trips/trip.entity';
 import { User } from '../users/user.entity';
 import * as ITrip from '../interfaces';
+import { config } from '../../config';
 
 @EntityRepository(Post)
 export class PostRepository extends Repository<Post> {
-  private readonly repoManager: EntityManager = getManager();
+  private readonly connectionName: string = config.ENV === 'test' ? 'testConnection' : 'default';
   private readonly logger: Logger = new Logger('PostRepository');
   private readonly cloudinaryBaseUrl: string = 'https://res.cloudinary.com/ahoyapp/image/upload';
 
@@ -25,14 +26,14 @@ export class PostRepository extends Repository<Post> {
     const { content, publicStatus, files } = createPostDto;
     const post = new Post();
     post.content = content;
-    post.images = files.map((file) => `${this.cloudinaryBaseUrl}/posts/${file.originalname}`);
+    if (files) post.images = files.map((file) => `${this.cloudinaryBaseUrl}/posts/${file.originalname}`);
     post.publicStatus = publicStatus;
     post.publisher = user;
     post.trip = trip;
     try {
       await post.save();
     } catch (error) {
-      this.logger.log(error.message, 'CreatePost');
+      this.logger.error(error.message, '', 'CreatePostError');
       throw new InternalServerErrorException(error.message);
     }
     return post;
@@ -47,9 +48,9 @@ export class PostRepository extends Repository<Post> {
    */
   public async getPostById(id: string, publisher_id: string): Promise<Post> {
     try {
-      return await this.findOne({ where: { id, publisher: publisher_id } });
+      return await getRepository(Post, this.connectionName).findOne({ where: { id, publisher: publisher_id } });
     } catch (error) {
-      this.logger.log(error.message, 'GetPostById');
+      this.logger.error(error.message, '', 'GetPostByIdError');
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -78,8 +79,7 @@ export class PostRepository extends Repository<Post> {
     };
 
     try {
-      const [posts, count] = await this.findAndCount(searchOpts);
-      if (posts.length === 0) return null;
+      const [posts, count] = await getRepository(Post, this.connectionName).findAndCount(searchOpts);
       return {
         posts,
         take,
@@ -87,7 +87,7 @@ export class PostRepository extends Repository<Post> {
         count,
       };
     } catch (error) {
-      this.logger.log(error.message, 'GetPosts');
+      this.logger.error(error.message, '', 'GetPostsError');
       throw new InternalServerErrorException(error.message);
     }
   }

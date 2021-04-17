@@ -7,7 +7,7 @@ import { TripController } from './trip.controller';
 import { TripService } from './trip.service';
 import { UserRepository } from '../users/user.repository';
 import { TripRepository } from './trip.repository';
-import { LocationRepository } from 'locations/location.repository';
+import { LocationRepository } from '../locations/location.repository';
 import { TripEventSubscribers } from '../subscribers';
 import { RoutePlanProvider } from '../providers/route-plan.provider';
 import { config } from '../../config';
