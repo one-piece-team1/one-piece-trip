@@ -5,9 +5,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { AppModule } from '../../app.module';
 import { JwtStrategy } from '../../strategy/jwt-strategy';
 import { TripService } from '../../trips/trip.service';
+import { PostService } from '../../posts/post.service';
 import { Trip } from '../../trips/trip.entity';
-import { MockCreateTrip } from '../../libs/mock_data';
+import { Post } from '../../posts/post.entity';
+import { MockCreateTrip, MockCreatePost } from '../../libs/mock_data';
 import { CreateTripDto, GetTripByIdDto, GetTripByPagingDto } from '../../trips/dto';
+import { CreatePostDto } from '../../posts/dto';
 import { config } from '../../../config';
 import * as EShare from '../../enums';
 import * as IShare from '../../interfaces';
@@ -33,13 +36,13 @@ describe('# App Integration', () => {
   let app: INestApplication;
   let jwtStrategy: JwtStrategy;
   let tripService: TripService;
+  let postService: PostService;
 
   // mock data
   let mockValideUser: IShare.JwtPayload;
   let mockInvalidUser: IShare.JwtPayload;
   let mockCreateTripDto: CreateTripDto;
-  let mockGetTripByIdDto: GetTripByIdDto;
-  let mockGetTripByPagingDto: GetTripByPagingDto;
+  let mockCreatePostDto: CreatePostDto;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -59,10 +62,19 @@ describe('# App Integration', () => {
             getTripByPaging: jest.fn(),
           },
         },
+        {
+          provide: PostService,
+          useValue: {
+            getPosts: jest.fn(),
+            getPostById: jest.fn(),
+            createPost: jest.fn(),
+          },
+        },
       ],
     }).compile();
     jwtStrategy = moduleFixture.get<JwtStrategy>(JwtStrategy);
     tripService = moduleFixture.get<TripService>(TripService);
+    postService = moduleFixture.get<PostService>(PostService);
     mockValideUser = {
       id: uuidv4(),
       username: 'test',
@@ -220,7 +232,6 @@ describe('# App Integration', () => {
     describe('# (GET) /trips/:id/publishers/:publisherId ', () => {
       afterEach(() => {
         jest.resetAllMocks();
-        mockGetTripByIdDto = null;
       });
 
       it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
@@ -263,7 +274,6 @@ describe('# App Integration', () => {
     describe('# (GET) /trips/paging', () => {
       afterEach(() => {
         jest.resetAllMocks();
-        mockGetTripByPagingDto = null;
       });
 
       it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
@@ -274,7 +284,6 @@ describe('# App Integration', () => {
         const result = res.body as IDtoException;
         expect(result.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
         expect(result.message).toEqual('Unauthorized');
-        done();
         done();
       });
 
@@ -310,6 +319,156 @@ describe('# App Integration', () => {
         expect(result.message.take).toEqual(10);
         expect(result.message.skip).toEqual(0);
         expect(result.message.trips[0].id).toEqual(mockTrip.id);
+        done();
+      });
+    });
+  });
+
+  describe('# Post Controller Integration', () => {
+    describe('# (POST) /posts', () => {
+      afterEach(() => {
+        jest.resetAllMocks();
+        mockCreatePostDto = null;
+      });
+
+      it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
+        mockCreatePostDto = {
+          content: 'test',
+          publicStatus: EShare.ETripView.PUBLIC,
+          tripId: uuidv4(),
+          publisherId: mockInvalidUser.id,
+        };
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockInvalidUser);
+        const res = await request(app.getHttpServer())
+          .post('/posts')
+          .set('Accept', 'application/json')
+          .send(mockCreatePostDto);
+        const result = res.body as IDtoException;
+        expect(result.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+        expect(result.message).toEqual('Unauthorized');
+        done();
+      });
+
+      it('Should be able to return bad request when dto is not satisfied', async (done: jest.DoneCallback) => {
+        mockCreatePostDto = {
+          content: 'test',
+          publicStatus: EShare.ETripView.PUBLIC,
+          tripId: '123',
+          publisherId: mockValideUser.id,
+        };
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockValideUser);
+        const res = await request(app.getHttpServer())
+          .post('/posts')
+          .set('Authorization', `Bearer ${testToken}`)
+          .set('Accept', 'application/json')
+          .send(mockCreatePostDto);
+        const result = res.body as IDtoException;
+        expect(result.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+        expect(result.error).toEqual('Bad Request');
+        expect(result.message[0]).toMatch(/(publisherId|must|UUID)/gi);
+        done();
+      });
+
+      it('Should be able to return status with success', async (done: jest.DoneCallback) => {
+        mockCreatePostDto = {
+          content: 'test',
+          publicStatus: EShare.ETripView.PUBLIC,
+          tripId: uuidv4(),
+          publisherId: mockValideUser.id,
+        };
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockValideUser);
+        const mockCreatePost = MockCreatePost();
+        postService.createPost = jest.fn().mockReturnValueOnce({ status: 'success', statusCode: 201, message: mockCreatePost });
+        const res = await request(app.getHttpServer())
+          .post('/posts')
+          .set('Authorization', `Bearer ${testToken}`)
+          .set('Accept', 'application/json')
+          .send(mockCreatePostDto);
+        const result = res.body as IShare.IResponseBase<Post>;
+        expect(result.statusCode).toEqual(HttpStatus.CREATED);
+        expect(result.status).toEqual('success');
+        expect(result.message.id).toEqual(mockCreatePost.id);
+        done();
+      });
+    });
+
+    describe('# (GET) /posts/:id', () => {
+      afterEach(() => {
+        jest.resetAllMocks();
+      });
+
+      it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockInvalidUser);
+        const res = await request(app.getHttpServer()).get(`/posts/${mockInvalidUser.id}`);
+        const result = res.body as IDtoException;
+        expect(result.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+        expect(result.message).toEqual('Unauthorized');
+        done();
+      });
+
+      it('Should be able to return bad request when dto is not satisfied', async (done: jest.DoneCallback) => {
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockValideUser);
+        const res = await request(app.getHttpServer())
+          .get(`/posts/123`)
+          .set('Authorization', `Bearer ${testToken}`);
+        const result = res.body as IDtoException;
+        expect(result.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+        expect(result.error).toEqual('Bad Request');
+        expect(result.message[0] as string).toMatch(/(postId|must|UUID)/gi);
+        done();
+      });
+
+      it('Should be able to return status with success', async (done: jest.DoneCallback) => {
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockValideUser);
+        const mockPost = MockCreatePost() as unknown;
+        postService.getPostById = jest.fn().mockReturnValueOnce({ statusCode: 200, status: 'success', message: mockPost } as IShare.IResponseBase<Post>);
+        const res = await request(app.getHttpServer())
+          .get(`/posts/${mockValideUser.id}`)
+          .set('Authorization', `Bearer ${testToken}`);
+        const result = res.body as IShare.IResponseBase<Post>;
+        expect(result.statusCode).toEqual(HttpStatus.OK);
+        expect(result.status).toEqual('success');
+        expect(result.message.id).toEqual(mockPost['id']);
+        done();
+      });
+    });
+
+    describe('# (GET) /posts', () => {
+      afterEach(() => {
+        jest.resetAllMocks();
+      });
+
+      it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockInvalidUser);
+        const res = await request(app.getHttpServer())
+          .get('/posts')
+          .query({});
+        const result = res.body as IDtoException;
+        expect(result.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+        expect(result.message).toEqual('Unauthorized');
+        done();
+      });
+
+      it('Should be able to return Unauthorized when guard not passed', async (done: jest.DoneCallback) => {
+        jwtStrategy.validate = jest.fn().mockReturnValue(mockValideUser);
+        const mockPost = MockCreatePost() as unknown;
+        postService.getPosts = jest.fn().mockReturnValueOnce({ statusCode: 200, status: 'success', message: { posts: [mockPost], count: 1, skip: 0, take: 10 } } as IShare.IResponseBase<IShare.IPostPagingResponseBase<Post[]>>);
+        const res = await request(app.getHttpServer())
+          .get('/posts')
+          .set('Authorization', `Bearer ${testToken}`)
+          .query({
+            take: 10,
+            skip: 0,
+            sort: 'ASC',
+            keyword: 0,
+          });
+        const result = res.body as IShare.IResponseBase<IShare.IPostPagingResponseBase<Post[]>>;
+        expect(result.statusCode).toEqual(HttpStatus.OK);
+        expect(result.status).toEqual('success');
+        expect(result.message.count).toEqual(1);
+        expect(result.message.take).toEqual(10);
+        expect(result.message.skip).toEqual(0);
+        expect(result.message.posts[0].id).toEqual(mockPost['id']);
         done();
       });
     });
