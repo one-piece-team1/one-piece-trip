@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MultiLineString } from 'geojson';
 import { User } from '../users/user.entity';
 import { Trip } from './trip.entity';
-import { LocationRepository } from 'locations/location.repository';
+import { LocationRepository } from '../locations/location.repository';
 import { Location } from '../locations/relations';
 import { UserRepository } from '../users/user.repository';
 import { TripRepository } from './trip.repository';
@@ -30,8 +30,13 @@ export class TripService {
     private readonly routePlanProvider: RoutePlanProvider,
   ) {}
 
-  public async getRequest(): Promise<string> {
-    return 'Hello World!';
+  /**
+   * @description health check use
+   * @public
+   * @returns {string}
+   */
+  public getRequest(): string {
+    return 'Server is healthly';
   }
 
   /**
@@ -56,6 +61,7 @@ export class TripService {
         HttpStatus.FORBIDDEN,
       );
     }
+
     const isAdmin: boolean = user.role === ETrip.EUserRole.ADMIN;
     const publisher: User = await this.userRepository.getUserById(user.id, isAdmin);
     if (!publisher) {
@@ -74,16 +80,6 @@ export class TripService {
     const promises = [this.locationRepository.findLocationByLocationName(startPointName), this.locationRepository.findLocationByLocationName(endPointName)];
 
     const locations = await Promise.all(promises);
-    if (!(locations instanceof Array)) {
-      this.logger.error('Location not found', '', 'CreateTripError');
-      return new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Location not found',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     if (!(locations[0] instanceof Location) || !(locations[1] instanceof Location)) {
       this.logger.error('Location not found', '', 'CreateTripError');
       return new HttpException(

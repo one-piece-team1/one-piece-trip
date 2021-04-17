@@ -2,7 +2,7 @@ import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entit
 import { Point } from 'geojson';
 import * as ELocation from '../../enums';
 import { Country } from './country.entity';
-import { Trip } from 'trips/trip.entity';
+import { Trip } from '../../trips/trip.entity';
 
 @Entity()
 @Unique(['locationName'])
@@ -87,6 +87,8 @@ export class Location extends BaseEntity {
     this.updatedAt = new Date();
   }
 
+  // location currently don't need this hook, update in turn services in future
+  /* istanbul ignore next */
   @BeforeUpdate()
   updateDateWhenUpdate() {
     this.updatedAt = new Date();

@@ -1,7 +1,7 @@
 import { BaseEntity, BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
 import { MultiLineString } from 'geojson';
 import { User } from '../users/user.entity';
-import { Post } from 'posts/post.entity';
+import { Post } from '../posts/post.entity';
 import { Location } from '../locations/relations';
 import * as ETrip from '../enums';
 
