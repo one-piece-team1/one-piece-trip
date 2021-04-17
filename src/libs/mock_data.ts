@@ -95,3 +95,12 @@ export function MockCreateTrip() {
     },
   };
 }
+
+export function MockCreatePost() {
+  return {
+    id: uuidv4(),
+    content: 'test',
+    image: 'https://test.com/test.png',
+    publicStatus: EShare.ETripView.PUBLIC,
+  };
+}
