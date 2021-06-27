@@ -3,6 +3,7 @@ import Kafka from 'node-rdkafka';
 import { User } from '../../users/user.entity';
 import { UserRepository } from '../../users/user.repository';
 import { UserEventStoreRepository } from '../stores/user-event.store';
+import { UpdatePasswordEventDto } from 'users/dto';
 import * as IShare from '../../interfaces';
 import * as Event from '../../events';
 import { config } from '../../../config';
@@ -34,15 +35,24 @@ export class TripKakfaConsumerService {
     const kafkaEvt = kafkaMsg.value.toString();
     const jsonEvent: IReceiveEvent = JSON.parse(kafkaEvt);
     console.log('TripKakfaConsumerService_jsonEvent: ', jsonEvent);
-    switch (jsonEvent.type) {
-      case Event.UserEvent.CREATEUSER:
-        const event = await this.userEventStoreRepository.getUserEventById(jsonEvent.id);
-        if (event.data) {
-          const user = await this.userRepository.createUser(event.data as User);
-          if (user) {
-            await this.userEventStoreRepository.register({ topic: config.EVENT_STORE_SETTINGS.topics.tripEvent }, event.id);
-          }
+    if (jsonEvent.type === Event.UserEvent.CREATEUSER) {
+      const event = await this.userEventStoreRepository.getUserEventById(jsonEvent.id);
+      if (event.data) {
+        const user = await this.userRepository.createUser(event.data as User);
+        if (user) {
+          await this.userEventStoreRepository.register({ topic: config.EVENT_STORE_SETTINGS.topics.tripEvent }, event.id);
         }
+      }
+      return;
+    }
+    if (jsonEvent.type === Event.UserEvent.UPDATEUSERPASSWORD) {
+      const event = await this.userEventStoreRepository.getUserEventById(jsonEvent.id);
+      if (event.data) {
+        const user = await this.userRepository.updateUserPassword(event.data as UpdatePasswordEventDto);
+        if (user) {
+          await this.userEventStoreRepository.register({ topic: config.EVENT_STORE_SETTINGS.topics.tripEvent }, event.id);
+        }
+      }
     }
   }
 

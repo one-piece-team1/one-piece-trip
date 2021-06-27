@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { AfterUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class UserEvent {
@@ -19,4 +19,9 @@ export class UserEvent {
 
   @Column({ type: 'varchar', array: true, nullable: false, default: () => 'Array[]::varchar[]' })
   topics: string[];
+
+  @AfterUpdate()
+  updateStatus() {
+    this.status = this.targets.length === this.topics.length;
+  }
 }
