@@ -75,6 +75,7 @@
     "ioredis": "^4.19.2",
     "lodash": "^4.17.20",
     "nanoid": "^3.1.20",
+    "node-rdkafka": "^2.10.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -129,7 +130,8 @@
       "src/libs",
       "src/subscribers",
       "src/publishers",
-      "src/handlers"
+      "src/handlers",
+      "src/domains"
     ],
     "moduleFileExtensions": [
       "js",
