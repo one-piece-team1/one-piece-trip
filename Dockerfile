@@ -26,4 +26,4 @@ RUN npm install
 RUN npm install request --save
 COPY . .
 RUN npm run build
-EXPOSE 7071 8080
+EXPOSE 7072 8080
